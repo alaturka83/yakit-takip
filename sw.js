@@ -1,5 +1,5 @@
 // Yakıt Takip — çevrimdışı çalışma için service worker
-const CACHE = 'yakit-takip-v5';
+const CACHE = 'yakit-takip-v6';
 const SHELL = ['./', './index.html', './config.js', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
