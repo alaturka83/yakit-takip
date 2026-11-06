@@ -1,6 +1,6 @@
 {
   "name": "Yakıt Takip",
-  "short_name": "Yakıt",
+  "short_name": "Yakıt Takip",
   "description": "Kişisel yakıt alım ve tüketim takibi",
   "start_url": "./index.html",
   "scope": "./",

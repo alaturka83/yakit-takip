@@ -2,12 +2,12 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>Yakıt Takip</title>
 <meta name="theme-color" content="#e8590c">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Yakıt Takip">
 <style>
@@ -155,6 +155,23 @@ label.fl{display:block;font-size:13px;color:var(--mut);margin-bottom:4px;font-we
 .muted{color:var(--mut)}
 .small{font-size:13px}
 .st{display:flex;align-items:center;gap:8px;font-weight:600;margin-bottom:10px}
+/* ===== İstatistik mini kutular ===== */
+.kpis.mini{grid-template-columns:repeat(4,1fr);gap:6px}
+.kpis.mini .kpi{padding:7px 8px;border-radius:10px}
+.kpis.mini .l{font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpis.mini .v{font-size:15px;letter-spacing:-.3px;white-space:nowrap}
+.kpis.mini .v small{font-size:10px;margin-left:2px}
+.kpis.mini .s{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:420px){.kpis.mini .v{font-size:14px}}
+/* ===== Yakıt formu araç kartı ===== */
+.efv{display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:12px;padding:7px 9px}
+.efv .vth{width:44px;height:44px;border-radius:9px}
+.efv .vth svg{width:22px;height:22px}
+.efv b{font-size:15px}
+.efv .es{font-size:12px}
+/* ===== Klavye açılınca form görünür kalsın ===== */
+.sheet{height:var(--vvh,100dvh);bottom:auto}
+.sheet-box{max-height:calc(var(--vvh,100dvh) - 12px);overscroll-behavior:contain}
 /* ===== Araç listesi ===== */
 .vcard{display:flex;align-items:center;gap:11px;padding:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:8px;cursor:pointer;box-shadow:var(--shadow)}
 .vth{width:54px;height:54px;border-radius:11px;background:var(--acc-soft);color:var(--acc);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center}
@@ -644,15 +661,15 @@ function renderStats(){
     <div class="chips">
       ${[['all','Tüm zamanlar'],['12','Son 12 ay'],['year','Bu yıl']].map(([k, n]) => `<button class="chip ${statRange === k ? 'on' : ''}" onclick="statRange='${k}';renderStats()">${n}</button>`).join('')}
     </div>
-    <div class="kpis">
-      ${kpi('Toplam harcama', fmt(spent, 0), '₺', `${E.length} alım`, true)}
-      ${kpi('Toplam yakıt', fmt(lit, 1), 'L', lit ? `Ort. ${fmt(spent / lit, 2)} ₺/L` : '')}
-      ${kpi('Ortalama tüketim', isFinite(tot.l100) ? fmt(tot.l100, 1) : '—', 'L/100 km', S.length ? `${S.length} full-full ölçüm` : 'İki full alım gerekli')}
-      ${kpi('Km başı maliyet', isFinite(tot.tlkm) ? fmt(tot.tlkm, 2) : '—', '₺/km', isFinite(tot.tlkm) ? `100 km ≈ ${fmt(tot.tlkm * 100, 0)} ₺` : '')}
-      ${kpi('Gidilen yol', fmtInt(kmSpan), 'km', daySpan ? `${daySpan} günde` : '')}
-      ${kpi('Günlük ortalama', daySpan ? fmt(kmSpan / daySpan, 0) : '—', 'km/gün', daySpan ? `≈ ${fmt(spent / daySpan * 30, 0)} ₺/ay yakıt` : '')}
-      ${kpi('Ort. alım aralığı', E.length > 1 ? fmtInt(kmSpan / (E.length - 1)) : '—', 'km', E.length > 1 && daySpan ? `≈ ${fmt(daySpan / (E.length - 1), 0)} günde bir` : '')}
-      ${kpi('En iyi / en kötü', S.length ? fmt(Math.min(...S.map(s => s.l100)), 1) + ' / ' + fmt(Math.max(...S.map(s => s.l100)), 1) : '—', S.length ? 'L/100' : '', 'Tüketim ölçümleri')}
+    <div class="kpis mini">
+      ${kpi('Harcama', fmt(spent, 0), '₺', `${E.length} alım`, true)}
+      ${kpi('Yakıt', fmt(lit, 0), 'L', lit ? `${fmt(spent / lit, 2)} ₺/L` : '')}
+      ${kpi('Tüketim', isFinite(tot.l100) ? fmt(tot.l100, 1) : '—', 'L/100', S.length ? `${S.length} ölçüm` : '2 full gerekli')}
+      ${kpi('Km maliyeti', isFinite(tot.tlkm) ? fmt(tot.tlkm, 2) : '—', '₺/km', isFinite(tot.tlkm) ? `100 km ${fmt(tot.tlkm * 100, 0)} ₺` : '')}
+      ${kpi('Gidilen yol', fmtInt(kmSpan), 'km', daySpan ? `${daySpan} gün` : '')}
+      ${kpi('Günlük', daySpan ? fmt(kmSpan / daySpan, 0) : '—', 'km', daySpan ? `${fmt(spent / daySpan * 30, 0)} ₺/ay` : '')}
+      ${kpi('Alım aralığı', E.length > 1 ? fmtInt(kmSpan / (E.length - 1)) : '—', 'km', E.length > 1 && daySpan ? `${fmt(daySpan / (E.length - 1), 0)} günde bir` : '')}
+      ${kpi('En iyi/kötü', S.length ? fmt(Math.min(...S.map(s => s.l100)), 1) + '/' + fmt(Math.max(...S.map(s => s.l100)), 1) : '—', '', 'L/100 km')}
     </div>
     <div class="card chart"><h3>Aylık harcama (son 12 ay)</h3>${barChart(mStat.map(m => ({x: AY_K[+m.ym.slice(5) - 1], y: m.tl})), {w: cw})}</div>
     <div class="g2" style="margin-bottom:10px">
@@ -829,15 +846,16 @@ function openEntry(id = null){
   ['liters','price','total'].forEach(k => f[k].classList.remove('calc'));
   efVehUI(!e);
   $('#sheet').classList.remove('hidden');
-  if (!e) setTimeout(() => f.km.focus(), 150);
+  $('#sheet .sheet-box').scrollTop = 0;
 }
 function efVehUI(prefill){
-  const box = $('#efVeh');
-  if (multiVeh()){
-    box.style.display = '';
-    box.innerHTML = `<label class="fl">Araç</label><div class="chips" style="margin:0">${vehList().map(v =>
-      `<button type="button" class="chip ${v.id === efVid ? 'on' : ''}" onclick="efVid='${v.id}';efVehUI(${prefill})">🚗 ${esc(v.plaka)}</button>`).join('')}</div>`;
-  } else box.style.display = 'none';
+  const box = $('#efVeh'), v = vehicles[efVid], {L: E, segs} = compute(efVid), tot = segTotals(segs), img = photoOf(efVid, 'arac');
+  const info = E.length ? `Son: ${fmtInt(E[E.length - 1].km)} km${isFinite(tot.l100) ? ' · ort. ' + fmt(tot.l100, 1) + ' L/100 km' : ''}` : 'Bu aracın ilk yakıt kaydı';
+  box.style.display = '';
+  box.innerHTML = `<div class="efv"><div class="vth">${img ? `<img src="${img}" alt="">` : CAR_SVG}</div>
+      <div style="min-width:0"><b>${esc(v.plaka)}</b>${vehName(v) ? ` <span class="es">· ${esc(vehName(v))}</span>` : ''}<div class="es">${info}</div></div></div>
+    ${multiVeh() ? `<div class="chips" style="margin:8px 0 0">${vehList().map(x =>
+      `<button type="button" class="chip ${x.id === efVid ? 'on' : ''}" onclick="efVid='${x.id}';efVehUI(${prefill})">🚗 ${esc(x.plaka)}</button>`).join('')}</div>` : ''}`;
   const L = activeList(efVid), last = L[L.length - 1], f = F();
   if (prefill){
     const anyLast = Object.values(entries).filter(x => !x.deleted).sort((a, b) => a.date.localeCompare(b.date)).pop();
@@ -913,6 +931,14 @@ function deleteEntry(){
   entries[editId] = e; saveEntries(); pushEntry(e);
   closeEntry(); renderAll(); toast('Kayıt silindi');
 }
+/* Klavye: görünen alan yüksekliğini izle, odaklanan alanı ortaya kaydır */
+function setVVH(){ const h = window.visualViewport ? window.visualViewport.height : window.innerHeight; document.documentElement.style.setProperty('--vvh', h + 'px'); }
+setVVH();
+if (window.visualViewport){ visualViewport.addEventListener('resize', setVVH); visualViewport.addEventListener('scroll', setVVH); }
+document.addEventListener('focusin', ev => {
+  const t = ev.target; if (!t.closest || !t.closest('.sheet-box')) return;
+  setTimeout(() => t.scrollIntoView({block: 'center', behavior: 'smooth'}), 320);
+});
 let _rz; window.addEventListener('resize', () => { clearTimeout(_rz); _rz = setTimeout(renderStats, 200); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape'){ closeEntry(); closeViewer(); closeAuth(); } });
 
@@ -931,7 +957,7 @@ function renderSettings(){
       <div class="srow"><div><b>Hesap</b><small>${acc}</small></div>${btn}</div>
       <div class="srow"><div><b>Yedek al</b><small>${vehList().length} araç · ${n} kayıt · JSON dosyası</small></div><button class="btn sm" onclick="exportJSON()">İndir</button></div>
       <div class="srow"><div><b>Yedekten yükle</b><small>Mevcut kayıtlarla birleştirilir</small></div><button class="btn sm" onclick="$('#importInput').click()">Seç</button></div>
-      <div class="srow"><div><b>Excel'e aktar</b><small>Tüm araçlar · CSV dosyası</small></div><button class="btn sm" onclick="exportCSV()">İndir</button></div>
+      <div class="srow"><div><b>Excel raporu</b><small>Tüm araçlar · özet, araç ve aylık sayfalar (.xlsx)</small></div><button class="btn sm" onclick="exportXLSX()">İndir</button></div>
     </div>
     <details class="card tight"><summary>📱 Ana ekrana ekleme</summary>
       <ul class="tips">
@@ -939,7 +965,7 @@ function renderSettings(){
         <li><b>iPhone:</b> Safari paylaş düğmesi → <i>Ana Ekrana Ekle</i>.</li>
         <li><b>Bilgisayar:</b> adres çubuğundaki yükle simgesi.</li>
       </ul></details>
-    <p class="small muted" style="text-align:center">Yakıt Takip · v1.3</p>`;
+    <p class="small muted" style="text-align:center">Yakıt Takip · v1.4</p>`;
 }
 function openAuth(){ $('#authSheet').classList.remove('hidden'); setTimeout(() => $('#lgE').focus(), 150); }
 function closeAuth(){ $('#authSheet').classList.add('hidden'); $('#lgP').value = ''; }
@@ -971,6 +997,115 @@ function exportCSV(){
     L.forEach(e => { const r = res[e.id];
       lines.push([q(v.plaka), dTR(e.date), e.km, n(e.liters, 2), n(e.price, 2), n(e.total, 2), e.full ? 'Full' : 'Kısmi', r.diffKm ?? '', n(r.l100, 2), n(r.tlkm, 2), q(e.station), q(e.note)].join(';')); }); });
   download(`yakit-kayitlari-${todayStr()}.csv`, '﻿' + lines.join('\r\n'), 'text/csv;charset=utf-8');
+}
+async function loadExcelJS(){
+  if (window.ExcelJS) return;
+  try { await loadScript('https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js'); }
+  catch(e){ await loadScript('https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js'); }
+}
+async function exportXLSX(){
+  const V = vehList();
+  if (!V.length) return toast('Önce bir araç ekle');
+  toast('Excel raporu hazırlanıyor…');
+  try { await loadExcelJS(); } catch(e){ toast('Excel kütüphanesi yüklenemedi, CSV indiriliyor'); return exportCSV(); }
+  const wb = new ExcelJS.Workbook(); wb.creator = 'Yakıt Takip'; wb.created = new Date();
+  const C = {acc: 'FFE8590C', accSoft: 'FFFFF1E8', dark: 'FF1F2937', head: 'FF374151', zebra: 'FFF7F8FA', line: 'FFD1D5DB', white: 'FFFFFFFF', green: 'FF15803D', greenSoft: 'FFE8F6EC', amberSoft: 'FFFDF3E1', amber: 'FFB45309', mut: 'FF6B7280'};
+  const thin = {style: 'thin', color: {argb: C.line}}, box = {top: thin, left: thin, bottom: thin, right: thin};
+  const fill = c => ({type: 'pattern', pattern: 'solid', fgColor: {argb: c}});
+  const TL = '#,##0.00 "₺"', TL0 = '#,##0 "₺"', NUM2 = '#,##0.00', NUM1 = '#,##0.0', INT = '#,##0', DATE = 'dd.mm.yyyy';
+  const toDate = s => { const [y, m, d] = s.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d)); };
+  const today = dTR(todayStr());
+  const sheetName = (s, used) => { let n = String(s).replace(/[\[\]:*?\/\\]/g, '').slice(0, 31) || 'Araç', i = 2; while (used.has(n)) n = (String(s).slice(0, 27) + ' (' + i++ + ')'); used.add(n); return n; };
+  function title(ws, text, sub, cols){
+    ws.mergeCells(1, 1, 1, cols); ws.mergeCells(2, 1, 2, cols);
+    const t = ws.getCell(1, 1); t.value = text; t.font = {name: 'Calibri', size: 16, bold: true, color: {argb: C.white}}; t.fill = fill(C.acc); t.alignment = {vertical: 'middle', indent: 1};
+    const s2 = ws.getCell(2, 1); s2.value = sub; s2.font = {name: 'Calibri', size: 10, italic: true, color: {argb: C.mut}}; s2.fill = fill(C.accSoft); s2.alignment = {vertical: 'middle', indent: 1};
+    ws.getRow(1).height = 30; ws.getRow(2).height = 18;
+  }
+  function header(ws, rowNo, labels){
+    const r = ws.getRow(rowNo); r.values = labels; r.height = 30;
+    r.eachCell(c => { c.font = {name: 'Calibri', bold: true, color: {argb: C.white}, size: 10.5}; c.fill = fill(C.head); c.border = box; c.alignment = {vertical: 'middle', horizontal: 'center', wrapText: true}; });
+  }
+  function body(r, i, fmts){
+    r.eachCell({includeEmpty: true}, (c, col) => { c.border = box; if (i % 2) c.fill = fill(C.zebra); if (fmts[col - 1]) c.numFmt = fmts[col - 1]; c.alignment = {vertical: 'middle', horizontal: col === 1 ? 'left' : (typeof c.value === 'string' ? 'center' : 'right')}; c.font = {name: 'Calibri', size: 10.5}; });
+    r.height = 18;
+  }
+  function totalRow(r){ r.eachCell({includeEmpty: true}, c => { c.font = {name: 'Calibri', bold: true, size: 10.5}; c.fill = fill(C.accSoft); c.border = {...box, top: {style: 'medium', color: {argb: C.acc}}}; }); r.height = 20; }
+  const used = new Set(['Özet', 'Aylık Özet']);
+
+  /* --- Özet sayfası --- */
+  const ws0 = wb.addWorksheet('Özet', {views: [{showGridLines: false}], properties: {tabColor: {argb: C.acc}}});
+  const H0 = ['Plaka', 'Araç', 'Yakıt türü', 'Alım', 'Toplam litre', 'Toplam tutar', 'Ort. ₺/L', 'Takip edilen km', 'Ort. L/100 km', 'Ort. ₺/km', 'İlk alım', 'Son alım'];
+  title(ws0, 'Yakıt Takip · Genel Özet', `Rapor tarihi: ${today} · ${V.length} araç`, H0.length);
+  header(ws0, 4, H0);
+  V.forEach((v, i) => {
+    const {L, segs} = compute(v.id), t = segTotals(segs), lit = L.reduce((s, e) => s + e.liters, 0), tl = L.reduce((s, e) => s + e.total, 0);
+    const byD = [...L].sort((a, b) => a.date.localeCompare(b.date));
+    const r = ws0.getRow(5 + i);
+    r.values = [v.plaka, vehName(v) || '-', v.yakit || '-', L.length, lit, tl, lit ? tl / lit : null, L.length > 1 ? L[L.length - 1].km - L[0].km : 0,
+      isFinite(t.l100) ? t.l100 : null, isFinite(t.tlkm) ? t.tlkm : null, byD[0] ? toDate(byD[0].date) : null, byD.length ? toDate(byD[byD.length - 1].date) : null];
+    body(r, i, [null, null, null, INT, NUM2, TL, TL, INT, NUM1, TL, DATE, DATE]);
+    r.getCell(1).font = {name: 'Calibri', bold: true, size: 10.5};
+  });
+  const tr0 = ws0.getRow(5 + V.length), last0 = 4 + V.length;
+  tr0.values = ['TOPLAM', '', '', {formula: `SUM(D5:D${last0})`}, {formula: `SUM(E5:E${last0})`}, {formula: `SUM(F5:F${last0})`}, {formula: `IFERROR(F${last0 + 1}/E${last0 + 1},0)`}, {formula: `SUM(H5:H${last0})`}, '', '', '', ''];
+  totalRow(tr0); [4, 5, 6, 7, 8].forEach((c, k) => tr0.getCell(c).numFmt = [INT, NUM2, TL, TL, INT][k]);
+  ws0.columns.forEach((c, i) => c.width = [14, 22, 13, 8, 13, 15, 11, 15, 13, 11, 12, 12][i]);
+  ws0.views = [{state: 'frozen', ySplit: 4, showGridLines: false}];
+  const fitPage = ws => ws.pageSetup = {orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0, paperSize: 9, margins: {left: .4, right: .4, top: .5, bottom: .5, header: .2, footer: .2}};
+  fitPage(ws0);
+
+  /* --- Araç sayfaları --- */
+  const monthly = [];
+  V.forEach(v => {
+    const {L, res, segs} = compute(v.id), st = segTotals(segs);
+    const ws = wb.addWorksheet(sheetName(v.plaka, used), {views: [{state: 'frozen', ySplit: 5, showGridLines: false}], properties: {tabColor: {argb: C.head}}});
+    const H = ['Tarih', 'Kilometre', 'Litre', 'Litre fiyatı', 'Tutar', 'Depo', 'Önceki alımdan km', 'L/100 km', '₺/km', 'İstasyon', 'Not'];
+    title(ws, `${v.plaka}${vehName(v) ? ' · ' + vehName(v) : ''}`, [v.yil && 'Model yılı ' + v.yil, v.yakit, v.depo && 'Depo ' + v.depo + ' L', v.muayene && 'Muayene ' + dTR(v.muayene), `${L.length} alım`].filter(Boolean).join(' · '), H.length);
+    header(ws, 5, H);
+    ws.getRow(4).height = 6;
+    L.forEach((e, i) => {
+      const r0 = res[e.id], r = ws.getRow(6 + i);
+      r.values = [toDate(e.date), e.km, e.liters, e.price, e.total, e.full ? 'Full' : 'Kısmi', r0.diffKm ?? null, r0.l100 ?? null, r0.tlkm ?? null, e.station || '', e.note || ''];
+      body(r, i, [DATE, INT, NUM2, TL, TL, null, INT, NUM2, TL, null, null]);
+      const dc = r.getCell(6); dc.font = {name: 'Calibri', bold: true, size: 10, color: {argb: e.full ? C.green : C.amber}}; dc.fill = fill(e.full ? C.greenSoft : C.amberSoft);
+      r.getCell(10).alignment = {horizontal: 'left', vertical: 'middle'}; r.getCell(11).alignment = {horizontal: 'left', vertical: 'middle', wrapText: true};
+      const ym = e.date.slice(0, 7); let m = monthly.find(x => x.ym === ym && x.vid === v.id);
+      if (!m){ m = {ym, vid: v.id, plaka: v.plaka, n: 0, lit: 0, tl: 0}; monthly.push(m); } m.n++; m.lit += e.liters; m.tl += e.total;
+    });
+    if (L.length){
+      const a = 6, b = 5 + L.length, tr = ws.getRow(b + 1);
+      tr.values = ['TOPLAM', {formula: `MAX(B${a}:B${b})-MIN(B${a}:B${b})`}, {formula: `SUM(C${a}:C${b})`}, {formula: `IFERROR(E${b + 1}/C${b + 1},0)`}, {formula: `SUM(E${a}:E${b})`}, '', '', isFinite(st.l100) ? st.l100 : '', isFinite(st.tlkm) ? st.tlkm : '', '', ''];
+      totalRow(tr); [[2, INT], [3, NUM2], [4, TL], [5, TL], [8, NUM2], [9, TL]].forEach(([c, f]) => tr.getCell(c).numFmt = f);
+      tr.getCell(2).note = 'Takip edilen toplam km'; tr.getCell(8).note = 'Full-full ölçümlere göre genel ortalama';
+      ws.autoFilter = {from: {row: 5, column: 1}, to: {row: b, column: H.length}};
+    }
+    ws.columns.forEach((c, i) => c.width = [12, 12, 10, 12, 13, 8, 12, 10, 10, 22, 28][i]);
+    ws.pageSetup = {orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0, paperSize: 9, margins: {left: .4, right: .4, top: .5, bottom: .5, header: .2, footer: .2}};
+    ws.pageSetup.printTitlesRow = '5:5';
+    ws.headerFooter.oddFooter = '&L' + v.plaka + '&RSayfa &P / &N';
+  });
+
+  /* --- Aylık özet --- */
+  const wm = wb.addWorksheet('Aylık Özet', {views: [{state: 'frozen', ySplit: 4, showGridLines: false}], properties: {tabColor: {argb: C.green}}});
+  const HM = ['Ay', 'Plaka', 'Alım', 'Litre', 'Tutar', 'Ort. ₺/L'];
+  title(wm, 'Aylık Harcama Özeti', `Rapor tarihi: ${today}`, HM.length);
+  header(wm, 4, HM);
+  monthly.sort((a, b) => b.ym.localeCompare(a.ym) || a.plaka.localeCompare(b.plaka)).forEach((m, i) => {
+    const [y, mo] = m.ym.split('-'), r = wm.getRow(5 + i);
+    r.values = [`${AYLAR[+mo - 1]} ${y}`, m.plaka, m.n, m.lit, m.tl, m.lit ? m.tl / m.lit : null];
+    body(r, i, [null, null, INT, NUM2, TL, TL]); r.getCell(2).alignment = {horizontal: 'center', vertical: 'middle'};
+  });
+  if (monthly.length){ const b = 4 + monthly.length, tr = wm.getRow(b + 1);
+    tr.values = ['TOPLAM', '', {formula: `SUM(C5:C${b})`}, {formula: `SUM(D5:D${b})`}, {formula: `SUM(E5:E${b})`}, {formula: `IFERROR(E${b + 1}/D${b + 1},0)`}];
+    totalRow(tr); [[3, INT], [4, NUM2], [5, TL], [6, TL]].forEach(([c, f]) => tr.getCell(c).numFmt = f); }
+  wm.columns.forEach((c, i) => c.width = [16, 14, 8, 12, 15, 11][i]);
+  fitPage(wm); wm.pageSetup.orientation = 'portrait';
+
+  const buf = await wb.xlsx.writeBuffer();
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([buf], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+  a.download = `yakit-raporu-${todayStr()}.xlsx`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+  toast('Excel raporu indirildi');
 }
 $('#importInput').onchange = async ev => {
   const f = ev.target.files[0]; ev.target.value = ''; if (!f) return;

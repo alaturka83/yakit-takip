@@ -1,6 +1,6 @@
 // Yakıt Takip — çevrimdışı çalışma için service worker
-const CACHE = 'yakit-takip-v4';
-const SHELL = ['./', './index.html', './config.js', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
+const CACHE = 'yakit-takip-v5';
+const SHELL = ['./', './index.html', './config.js', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -30,8 +30,8 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Firebase kütüphaneleri: önce önbellek
-  if (url.hostname === 'www.gstatic.com') {
+  // Firebase ve Excel kütüphaneleri: önce önbellek
+  if (url.hostname === 'www.gstatic.com' || url.hostname === 'cdnjs.cloudflare.com' || url.hostname === 'cdn.jsdelivr.net') {
     e.respondWith(
       caches.match(req).then(r => r || fetch(req).then(res => {
         const copy = res.clone();
