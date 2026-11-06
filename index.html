@@ -155,6 +155,20 @@ label.fl{display:block;font-size:13px;color:var(--mut);margin-bottom:4px;font-we
 .muted{color:var(--mut)}
 .small{font-size:13px}
 .st{display:flex;align-items:center;gap:8px;font-weight:600;margin-bottom:10px}
+/* ===== Araç listesi ===== */
+.vcard{display:flex;align-items:center;gap:11px;padding:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:8px;cursor:pointer;box-shadow:var(--shadow)}
+.vth{width:54px;height:54px;border-radius:11px;background:var(--acc-soft);color:var(--acc);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.vth img{width:100%;height:100%;object-fit:cover}
+.vth svg{width:26px;height:26px}
+.vi2{flex:1;min-width:0}
+.vi2 b{font-size:15.5px;letter-spacing:.2px}
+.vi2 .es{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chev{font-size:24px;color:var(--mut);line-height:1}
+.vadd{width:100%;border:2px dashed var(--line);background:transparent;border-radius:14px;padding:13px;font-weight:700;color:var(--acc);cursor:pointer;font-size:14.5px}
+.bk{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.vlist.v2{grid-template-columns:1fr 1fr}
+.vlist .w3{grid-column:1/-1}
+.vch .chip{font-weight:600}
 /* ===== Kompakt düzen ===== */
 body{font-size:14.5px}
 header{padding:7px 14px;padding-top:calc(7px + env(safe-area-inset-top))}
@@ -254,7 +268,7 @@ details.card summary{padding:9px 0;font-size:14px}
   <button data-p="home" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Özet</button>
   <button data-p="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Geçmiş</button>
   <button data-p="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg>İstatistik</button>
-  <button data-p="vehicle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/><path d="M9.5 17h5M3 12h18"/></svg>Aracım</button>
+  <button data-p="vehicle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/><path d="M9.5 17h5M3 12h18"/></svg>Araçlarım</button>
   <button data-p="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Ayarlar</button>
 </nav>
 
@@ -273,6 +287,7 @@ details.card summary{padding:9px 0;font-size:14px}
   <div class="sheet-box">
     <div class="sheet-head"><h3 id="sheetTitle">Yakıt Alımı</h3><button class="x" type="button" onclick="closeEntry()">×</button></div>
     <form id="ef" autocomplete="off">
+      <div id="efVeh" style="margin-bottom:10px;display:none"></div>
       <div class="f">
         <div><label class="fl">Tarih</label><input class="in" type="date" name="date" required></div>
         <div><label class="fl">Kilometre (sayaç)</label><input class="in" name="km" inputmode="numeric" placeholder="Örn. 85420"><div class="hint" id="kmHint"></div></div>
@@ -339,11 +354,17 @@ const LS = {
   get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
   set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){ toast('Cihaz hafızası dolu, kayıt yapılamadı!'); } }
 };
+const MAIN = 'v-main';   // tek araçlı eski sürümden taşınan aracın kimliği
 let entries = LS.get('yt_entries', {});
-let vehicle = LS.get('yt_vehicle', {});
+let vehicles = LS.get('yt_vehicles', {});
+let activeVid = LS.get('yt_active', null);
 let photos = {};
+(function migrateOld(){
+  const old = LS.get('yt_vehicle', null);
+  if (old && old.plaka && !vehicles[MAIN]){ vehicles[MAIN] = {...old, id: MAIN, createdAt: 0}; LS.set('yt_vehicles', vehicles); }
+})();
 const saveEntries = () => LS.set('yt_entries', entries);
-const saveVehicle = () => LS.set('yt_vehicle', vehicle);
+const saveVehicles = () => LS.set('yt_vehicles', vehicles);
 
 const idb = {
   db: null,
@@ -362,12 +383,29 @@ const idb = {
     tx.oncomplete = res; tx.onerror = res; }); }
 };
 
+/* ============ Araçlar (ortak) ============ */
+const vehList = () => Object.values(vehicles).filter(v => !v.deleted)
+  .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0) || String(a.plaka).localeCompare(String(b.plaka)));
+const hasVehicle = () => vehList().length > 0;
+const multiVeh = () => vehList().length > 1;
+const vidOf = e => e.vehicleId || MAIN;
+function curVid(){
+  const L = vehList(); if (!L.length) return null;
+  if (!L.some(v => v.id === activeVid)) activeVid = L[0].id;
+  return activeVid;
+}
+const curVeh = () => vehicles[curVid()] || null;
+function setActive(id){ activeVid = id; LS.set('yt_active', id); renderAll(); }
+const pkey = (vid, slot) => vid + '_' + slot;
+const normPKey = k => k.includes('_') ? k : MAIN + '_' + k;
+const vehName = v => [v.marka, v.model].filter(Boolean).join(' ');
+
 /* ============ Hesaplamalar ============ */
-const activeList = () => Object.values(entries).filter(e => !e.deleted)
+const activeList = (vid = curVid()) => Object.values(entries).filter(e => !e.deleted && vidOf(e) === vid)
   .sort((a, b) => a.km - b.km || a.date.localeCompare(b.date));
 
-function compute(){
-  const L = activeList(), res = {}, segs = [];
+function compute(vid = curVid()){
+  const L = activeList(vid), res = {}, segs = [];
   let lf = -1, accL = 0, accC = 0;
   L.forEach((e, i) => {
     const r = {};
@@ -403,7 +441,10 @@ function go(p){
   $('#fab').style.display = (p === 'home' || p === 'history') ? '' : 'none';
   window.scrollTo(0, 0);
 }
-document.querySelectorAll('#nav button').forEach(b => b.onclick = () => go(b.dataset.p));
+document.querySelectorAll('#nav button').forEach(b => b.onclick = () => {
+  if (b.dataset.p === 'vehicle'){ vehView = {mode: 'list', id: null}; vehDirty = false; renderVehicle(); }
+  go(b.dataset.p);
+});
 
 function renderAll(){
   renderHeader(); renderHome(); renderHistory(); renderStats();
@@ -411,13 +452,19 @@ function renderAll(){
   renderSettings();
 }
 function renderHeader(){
-  const t = [vehicle.plaka, [vehicle.marka, vehicle.model].filter(Boolean).join(' ')].filter(Boolean).join(' · ');
-  $('#hdrSub').textContent = t || 'Araç bilgisi eklenmedi';
+  const v = curVeh();
+  $('#hdrSub').textContent = v ? [v.plaka, vehName(v)].filter(Boolean).join(' · ') : 'Araç eklenmedi';
 }
 
 /* ============ Ortak parçalar ============ */
 const kpi = (l, v, u, s = '', hl = false) =>
   `<div class="kpi${hl ? ' hl' : ''}"><div class="l">${l}</div><div class="v">${v}${u ? `<small>${u}</small>` : ''}</div>${s ? `<div class="s">${s}</div>` : ''}</div>`;
+
+function vehChips(){
+  if (!multiVeh()) return '';
+  const cur = curVid();
+  return `<div class="chips vch">${vehList().map(v => `<button class="chip ${v.id === cur ? 'on' : ''}" onclick="setActive('${v.id}')">🚗 ${esc(v.plaka)}</button>`).join('')}</div>`;
+}
 
 function entryRow(e, r = {}){
   const [y, m, d] = e.date.split('-');
@@ -438,31 +485,33 @@ function entryRow(e, r = {}){
 }
 
 const DOCS = [['muayene','Muayene'],['sigorta','Trafik sigortası'],['kasko','Kasko']];
-function remindersHTML(all = false){
-  const out = [], t = todayStr();
-  DOCS.forEach(([k, n]) => {
-    if (!vehicle[k]) return;
-    const left = dayDiff(t, vehicle[k]);
-    if (left < 0) out.push(`<div class="rem b">⚠️ <div><b>${n}</b> süresi ${-left} gün önce doldu (${dTR(vehicle[k])})</div></div>`);
-    else if (left <= 30) out.push(`<div class="rem w">⏰ <div><b>${n}</b> bitişine ${left} gün kaldı (${dTR(vehicle[k])})</div></div>`);
-    else if (all) out.push(`<div class="rem o">✓ <div><b>${n}</b> geçerli · ${left} gün kaldı (${dTR(vehicle[k])})</div></div>`);
-  });
+function remindersHTML(list = vehList(), all = false){
+  const out = [], t = todayStr(), multi = multiVeh();
+  list.forEach(v => DOCS.forEach(([k, n]) => {
+    if (!v[k]) return;
+    const left = dayDiff(t, v[k]), who = (multi ? esc(v.plaka) + ' · ' : '') + n;
+    if (left < 0) out.push(`<div class="rem b">⚠️ <div><b>${who}</b> süresi ${-left} gün önce doldu (${dTR(v[k])})</div></div>`);
+    else if (left <= 30) out.push(`<div class="rem w">⏰ <div><b>${who}</b> bitişine ${left} gün kaldı (${dTR(v[k])})</div></div>`);
+    else if (all) out.push(`<div class="rem o">✓ <div><b>${n}</b> geçerli · ${left} gün kaldı (${dTR(v[k])})</div></div>`);
+  }));
   return out.join('');
 }
+const warnCount = v => DOCS.filter(([k]) => v[k] && dayDiff(todayStr(), v[k]) <= 30).length;
 
 /* ============ Özet ============ */
 function renderHome(){
-  const el = $('#p-home'), {L, res, segs} = compute();
+  const el = $('#p-home');
   if (!hasVehicle()){
     el.innerHTML = `<div class="card">
       <h2 style="margin:0 0 6px">Hoş geldin 👋</h2>
       <p class="muted" style="margin:0 0 14px">Başlamak için önce aracını tanımla. Plaka yeterli, diğer bilgileri sonra da ekleyebilirsin.</p>
-      <button class="btn pri" onclick="go('vehicle');setTimeout(()=>document.querySelector('#vf [name=plaka]').focus(),250)">🚗 Aracımı ekle</button></div>`;
+      <button class="btn pri" onclick="newVeh()">🚗 Araç ekle</button></div>`;
     return;
   }
+  const {L, res, segs} = compute();
   if (!L.length){
-    el.innerHTML = remindersHTML() + `<div class="card">
-      <h2 style="margin:0 0 6px">Araç hazır 👍</h2>
+    el.innerHTML = vehChips() + remindersHTML() + `<div class="card">
+      <h2 style="margin:0 0 6px">${esc(curVeh().plaka)} hazır 👍</h2>
       <p class="muted" style="margin:0">İlk yakıt alımını ekleyerek başla.</p>
       <ul class="tips">
         <li>Mümkün olduğunca depoyu <b>full</b> doldurduğun alımları kaydet. Tüketim iki full alım arasında hesaplanır.</li>
@@ -481,7 +530,7 @@ function renderHome(){
     cmp = Math.abs(p) < 1 ? 'Ortalamayla aynı' : `<span class="${p > 0 ? 'up' : 'down'}">${p > 0 ? '▲' : '▼'} %${fmt(Math.abs(p), 0)}</span> ortalamaya göre`;
   }
   const since = dayDiff(last.date, todayStr());
-  el.innerHTML = remindersHTML() + `
+  el.innerHTML = vehChips() + remindersHTML() + `
     <div class="kpis">
       ${kpi('Son tüketim', lastSeg ? fmt(lastSeg.l100, 1) : '—', 'L/100 km', lastSeg ? cmp || 'İlk ölçüm' : 'İkinci full alımda hesaplanır', true)}
       ${kpi('Ortalama tüketim', isFinite(tot.l100) ? fmt(tot.l100, 1) : '—', 'L/100 km', segs.length ? `${segs.length} ölçüm, ${fmtInt(tot.km)} km` : '')}
@@ -508,8 +557,10 @@ function renderHome(){
 /* ============ Geçmiş ============ */
 let histYear = 'all';
 function renderHistory(){
-  const el = $('#p-history'), {L, res} = compute();
-  if (!L.length){ el.innerHTML = `<h2 class="pt">Geçmiş</h2><div class="card muted">Henüz kayıt yok.</div>`; return; }
+  const el = $('#p-history');
+  if (!hasVehicle()){ el.innerHTML = `<h2 class="pt">Geçmiş</h2><div class="card muted">Önce bir araç ekle.</div>`; return; }
+  const {L, res} = compute();
+  if (!L.length){ el.innerHTML = `<h2 class="pt">Geçmiş</h2>${vehChips()}<div class="card muted">Bu araç için henüz kayıt yok.</div>`; return; }
   const years = [...new Set(L.map(e => e.date.slice(0, 4)))].sort().reverse();
   if (histYear !== 'all' && !years.includes(histYear)) histYear = 'all';
   const list = L.filter(e => histYear === 'all' || e.date.startsWith(histYear)).reverse();
@@ -519,9 +570,10 @@ function renderHistory(){
     const g = groups[ym].sort((a, b) => b.km - a.km), [y, m] = ym.split('-');
     const sum = g.reduce((s, e) => s + e.total, 0), lit = g.reduce((s, e) => s + e.liters, 0);
     return `<div class="mh">${AYLAR[+m-1]} ${y}<span>${fmt(lit, 1)} L · ${money(sum)}</span></div>
-      <div class="card" style="padding:4px 14px">${g.map(e => entryRow(e, res[e.id])).join('')}</div>`;
+      <div class="card" style="padding:2px 12px">${g.map(e => entryRow(e, res[e.id])).join('')}</div>`;
   }).join('');
   el.innerHTML = `<h2 class="pt">Geçmiş <span class="muted small">(${L.length} kayıt)</span></h2>
+    ${vehChips()}
     <div class="chips"><button class="chip ${histYear === 'all' ? 'on' : ''}" onclick="histYear='all';renderHistory()">Tümü</button>
     ${years.map(y => `<button class="chip ${histYear === y ? 'on' : ''}" onclick="histYear='${y}';renderHistory()">${y}</button>`).join('')}</div>
     ${html}`;
@@ -565,8 +617,10 @@ function barChart(bars, {color = 'var(--acc)', w = 640} = {}){
 /* ============ İstatistik ============ */
 let statRange = 'all';
 function renderStats(){
-  const el = $('#p-stats'), {L, segs} = compute();
-  if (!L.length){ el.innerHTML = `<h2 class="pt">İstatistik</h2><div class="card muted">İstatistik için önce birkaç yakıt alımı ekle.</div>`; return; }
+  const el = $('#p-stats');
+  if (!hasVehicle()){ el.innerHTML = `<h2 class="pt">İstatistik</h2><div class="card muted">Önce bir araç ekle.</div>`; return; }
+  const {L, segs} = compute();
+  if (!L.length){ el.innerHTML = `<h2 class="pt">İstatistik</h2>${vehChips()}<div class="card muted">İstatistik için önce birkaç yakıt alımı ekle.</div>`; return; }
   const t = todayStr(); let from = '0000';
   if (statRange === '12'){ const d = new Date(); d.setFullYear(d.getFullYear() - 1); from = d.toISOString().slice(0, 10); }
   if (statRange === 'year') from = t.slice(0, 4) + '-01-01';
@@ -575,7 +629,6 @@ function renderStats(){
   const kmSpan = E.length > 1 ? E[E.length - 1].km - E[0].km : 0;
   const byDate = [...E].sort((a, b) => a.date.localeCompare(b.date));
   const daySpan = byDate.length > 1 ? dayDiff(byDate[0].date, byDate[byDate.length - 1].date) : 0;
-  // son 12 ay
   const months = [], now = new Date();
   for (let i = 11; i >= 0; i--){ const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
     months.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0')); }
@@ -587,6 +640,7 @@ function renderStats(){
     return `<tr><td>${AYLAR[+mo-1]} ${y}</td><td>${m.n}</td><td>${fmt(m.lit, 1)} L</td><td>${money(m.tl)}</td><td>${fmt(m.tl / m.lit, 2)} ₺</td></tr>`; }).join('');
   const cw = Math.max(260, Math.min(window.innerWidth, 1000) - 50), lw = window.innerWidth >= 700 ? (cw - 40) / 2 : cw;
   el.innerHTML = `<h2 class="pt">İstatistik</h2>
+    ${vehChips()}
     <div class="chips">
       ${[['all','Tüm zamanlar'],['12','Son 12 ay'],['year','Bu yıl']].map(([k, n]) => `<button class="chip ${statRange === k ? 'on' : ''}" onclick="statRange='${k}';renderStats()">${n}</button>`).join('')}
     </div>
@@ -608,7 +662,7 @@ function renderStats(){
     ${rows ? `<div class="card"><h3>Aylık döküm (son 12 ay)</h3><div class="tw"><table class="t"><tr><th>Ay</th><th>Alım</th><th>Litre</th><th>Tutar</th><th>Ort. fiyat</th></tr>${rows}</table></div></div>` : ''}`;
 }
 
-/* ============ Aracım ============ */
+/* ============ Araçlarım ============ */
 const SLOTS = [['arac','Araç'],['ruhsatOn','Ruhsat ön'],['ruhsatArka','Ruhsat arka'],['police','Poliçe']];
 const VFIELDS = [
   ['plaka','Plaka *','34 ABC 123'],['marka','Marka','Örn. Renault'],['model','Model','Örn. Clio 1.0 TCe'],
@@ -617,51 +671,113 @@ const VFIELDS = [
   ['sahip','Ruhsat sahibi',''],['tescil','Tescil tarihi','','date'],['muayene','Muayene bitiş','','date'],
   ['sigorta','Trafik sigortası bitiş','','date'],['kasko','Kasko bitiş','','date'],['not','Not','','w']
 ];
-let vehDirty = false;
+const CAR_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/><path d="M9.5 17h5M3 12h18"/></svg>';
+let vehView = {mode: 'list', id: null}, vehDirty = false;
+const photoOf = (vid, slot) => { const p = photos[pkey(vid, slot)]; return p && p.data && !p.deleted ? p.data : null; };
+
 function renderVehicle(){
-  const el = $('#p-vehicle');
-  const tiles = SLOTS.map(([k, n]) => { const p = photos[k];
-    return p && p.data && !p.deleted
-      ? `<button class="ptile has" onclick="viewPhoto('${k}')"><img src="${p.data}" alt=""><span class="cap">${n}</span></button>`
-      : `<button class="ptile" onclick="pickPhoto('${k}')"><span class="plus">+</span>${n}</button>`; }).join('');
+  const el = $('#p-vehicle'), v = vehView.id ? vehicles[vehView.id] : null;
+  if (vehView.mode === 'edit') return renderVehEdit(el, v && !v.deleted ? v : null);
+  if (vehView.mode === 'detail' && v && !v.deleted) return renderVehDetail(el, v);
+  vehView = {mode: 'list', id: null};
+  renderVehList(el);
+}
+function renderVehList(el){
+  const L = vehList(), cur = curVid();
+  const cards = L.map(v => {
+    const {L: E, segs} = compute(v.id), tot = segTotals(segs), img = photoOf(v.id, 'arac'), w = warnCount(v);
+    const sub = [vehName(v), v.yil, v.yakit].filter(Boolean).join(' · ');
+    const st = E.length ? `${E.length} alım${isFinite(tot.l100) ? ' · ' + fmt(tot.l100, 1) + ' L/100 km' : ''} · ${fmtInt(E[E.length - 1].km)} km` : 'Henüz yakıt kaydı yok';
+    return `<div class="vcard" onclick="openVeh('${v.id}')">
+      <div class="vth">${img ? `<img src="${img}" alt="">` : CAR_SVG}</div>
+      <div class="vi2"><div><b>${esc(v.plaka)}</b>${L.length > 1 && v.id === cur ? ' <span class="bdg l">Seçili</span>' : ''}${w ? ' <span class="bdg p">⏰ ' + w + '</span>' : ''}</div>
+        ${sub ? `<div class="es">${esc(sub)}</div>` : ''}<div class="es">${st}</div></div>
+      <span class="chev">›</span></div>`;
+  }).join('');
+  el.innerHTML = `<h2 class="pt">Araçlarım <span class="muted small">(${L.length})</span></h2>
+    ${cards || '<div class="card muted small">Henüz araç eklenmedi.</div>'}
+    <button class="vadd" onclick="newVeh()">+ Yeni araç ekle</button>`;
+}
+function renderVehDetail(el, v){
+  const {L: E, segs} = compute(v.id), tot = segTotals(segs), cur = curVid();
+  const tiles = SLOTS.map(([k, n]) => { const img = photoOf(v.id, k);
+    return img ? `<button class="ptile has" onclick="viewPhoto('${k}')"><img src="${img}" alt=""><span class="cap">${n}</span></button>`
+               : `<button class="ptile" onclick="pickPhoto('${k}')"><span class="plus">+</span>${n}</button>`; }).join('');
+  const info = VFIELDS.filter(([k]) => k !== 'plaka' && v[k]).map(([k, n, , t]) =>
+    `<div class="${t === 'w' ? 'w3' : ''}"><span>${n.replace(' *', '')}</span>${esc(t === 'date' ? dTR(v[k]) : v[k])}</div>`).join('');
+  el.innerHTML = `<div class="bk"><button class="btn sm" onclick="vehBack()">‹ Araçlarım</button><button class="btn sm" onclick="editVeh('${v.id}')">✏️ Düzenle</button></div>
+    <div class="card">
+      <div class="lh"><h3 style="font-size:17px">${esc(v.plaka)}</h3><span>${esc(vehName(v))}</span></div>
+      <div class="vlist">
+        <div><span>Yakıt alımı</span>${E.length}</div>
+        <div><span>Ort. tüketim</span>${isFinite(tot.l100) ? fmt(tot.l100, 1) + ' L/100' : '—'}</div>
+        <div><span>Son km</span>${E.length ? fmtInt(E[E.length - 1].km) : '—'}</div>
+      </div>
+      ${multiVeh() && v.id !== cur ? `<button class="btn sm full" style="margin-top:10px" onclick="setActive('${v.id}');go('home')">Bu aracı seç</button>` : ''}
+    </div>
+    ${remindersHTML([v], true)}
+    <div class="card"><div class="lh"><h3>Fotoğraflar</h3><span>Kamerayla çekebilirsin</span></div><div class="ph">${tiles}</div></div>
+    <div class="card"><h3>Araç bilgileri</h3>
+      ${info ? `<div class="vlist v2">${info}</div>` : `<p class="small muted" style="margin:0">Bilgi eklenmedi. <a href="#" onclick="editVeh('${v.id}');return false">Düzenle</a></p>`}</div>
+    <button class="btn sm bad" style="margin:4px 0 0" onclick="deleteVeh('${v.id}')">🗑 Aracı sil</button>`;
+}
+function renderVehEdit(el, v){
+  const val = k => v ? (v[k] || '') : '';
   const field = ([k, n, ph, t]) => {
-    const v = esc(vehicle[k] || '');
     let inp;
-    if (t === 'sel') inp = `<select class="in" name="${k}">${['','Benzin','Dizel','LPG','Benzin + LPG','Hibrit'].map(o => `<option ${vehicle[k] === o ? 'selected' : ''} value="${o}">${o || 'Seçiniz'}</option>`).join('')}</select>`;
-    else if (t === 'date') inp = `<input class="in" type="date" name="${k}" value="${v}">`;
-    else inp = `<input class="in" name="${k}" value="${v}" placeholder="${ph}" ${t === 'numeric' || t === 'decimal' ? `inputmode="${t}"` : ''}>`;
+    if (t === 'sel') inp = `<select class="in" name="${k}">${['','Benzin','Dizel','LPG','Benzin + LPG','Hibrit'].map(o => `<option ${val(k) === o ? 'selected' : ''} value="${o}">${o || 'Seçiniz'}</option>`).join('')}</select>`;
+    else if (t === 'date') inp = `<input class="in" type="date" name="${k}" value="${esc(val(k))}">`;
+    else inp = `<input class="in" name="${k}" value="${esc(val(k))}" placeholder="${ph}" ${t === 'numeric' || t === 'decimal' ? `inputmode="${t}"` : ''}>`;
     return `<div class="${t === 'w' ? 'w2' : ''}"><label class="fl">${n}</label>${inp}</div>`;
   };
-  el.innerHTML = `<h2 class="pt">Aracım</h2>
-    ${remindersHTML(true)}
-    <div class="card"><div class="lh"><h3>Fotoğraflar</h3><span>Kamerayla çekebilirsin</span></div><div class="ph">${tiles}</div></div>
-    <div class="card"><h3>Araç kimliği</h3>
-      <form id="vf" class="f v3" oninput="vehDirty=true">${VFIELDS.map(field).join('')}</form>
-      <button class="btn pri full" style="margin-top:12px" onclick="saveVehicleForm()">Araç bilgilerini kaydet</button>
+  el.innerHTML = `<div class="bk"><button class="btn sm" onclick="vehDirty=false;${v ? `openVeh('${v.id}')` : 'vehBack()'}">‹ Vazgeç</button></div>
+    <div class="card"><h3>${v ? esc(v.plaka) + ' · düzenle' : 'Yeni araç'}</h3>
+      <form id="vf" class="f v3" oninput="vehDirty=true" onsubmit="event.preventDefault();saveVehicleForm()">${VFIELDS.map(field).join('')}</form>
+      <button class="btn pri full" style="margin-top:12px" onclick="saveVehicleForm()">Kaydet</button>
     </div>`;
 }
+function openVeh(id){ vehView = {mode: 'detail', id}; vehDirty = false; renderVehicle(); go('vehicle'); }
+function editVeh(id){ vehView = {mode: 'edit', id}; vehDirty = false; renderVehicle(); go('vehicle'); }
+function newVeh(){
+  vehView = {mode: 'edit', id: null}; vehDirty = false; renderVehicle(); go('vehicle');
+  setTimeout(() => { const p = document.querySelector('#vf [name=plaka]'); if (p) p.focus(); }, 250);
+}
+function vehBack(){ vehView = {mode: 'list', id: null}; vehDirty = false; renderVehicle(); window.scrollTo(0, 0); }
 function saveVehicleForm(){
   const fd = new FormData($('#vf')), v = {};
   VFIELDS.forEach(([k]) => { const x = (fd.get(k) || '').toString().trim(); if (x) v[k] = x; });
   if (!v.plaka){ toast('Plaka zorunlu'); const p = document.querySelector('#vf [name=plaka]'); if (p) p.focus(); return; }
   v.plaka = v.plaka.toLocaleUpperCase('tr-TR');
+  const old = vehView.id ? vehicles[vehView.id] : null;
+  if (vehList().some(x => x.plaka.replace(/\s/g, '') === v.plaka.replace(/\s/g, '') && (!old || x.id !== old.id))){ toast('Bu plakayla kayıtlı bir araç zaten var'); return; }
   const first = !hasVehicle();
-  v.updatedAt = Date.now();
-  vehicle = v; saveVehicle(); pushVehicle(); vehDirty = false;
+  v.id = old ? old.id : newId(); v.createdAt = old ? (old.createdAt || 0) : Date.now(); v.updatedAt = Date.now();
+  vehicles[v.id] = v; saveVehicles(); pushVehicle(v.id); vehDirty = false;
+  if (!old) { activeVid = v.id; LS.set('yt_active', v.id); }
+  vehView = {mode: 'detail', id: v.id};
   renderAll();
-  if (first && !activeList().length){ toast('Araç kaydedildi. Şimdi yakıt ekleyebilirsin'); go('home'); }
-  else toast('Araç bilgileri kaydedildi');
+  if (first){ toast('Araç kaydedildi. Şimdi yakıt ekleyebilirsin'); go('home'); }
+  else toast(old ? 'Araç bilgileri güncellendi' : 'Araç eklendi ve seçildi');
+}
+function deleteVeh(id){
+  const v = vehicles[id], n = activeList(id).length;
+  if (!confirm(`${v.plaka} silinsin mi?${n ? `\nBu araca ait ${n} yakıt kaydı da silinecek.` : ''}`)) return;
+  const now = Date.now();
+  Object.values(entries).forEach(e => { if (!e.deleted && vidOf(e) === id){ entries[e.id] = {...e, deleted: true, updatedAt: now}; pushEntry(entries[e.id]); } });
+  vehicles[id] = {...v, deleted: true, updatedAt: now};
+  saveEntries(); saveVehicles(); pushVehicle(id);
+  vehView = {mode: 'list', id: null}; renderAll(); toast('Araç silindi');
 }
 
 /* Fotoğraf */
 let photoSlot = null;
 function pickPhoto(k){ photoSlot = k; $('#photoInput').value = ''; $('#photoInput').click(); }
 $('#photoInput').onchange = async e => {
-  const f = e.target.files[0]; if (!f || !photoSlot) return;
+  const f = e.target.files[0]; if (!f || !photoSlot || !vehView.id) return;
   try {
-    const data = await compressImage(f, 1400, .78);
-    photos[photoSlot] = {data, updatedAt: Date.now()};
-    await idb.put(photoSlot, photos[photoSlot]); pushPhoto(photoSlot);
+    const data = await compressImage(f, 1400, .78), key = pkey(vehView.id, photoSlot);
+    photos[key] = {data, updatedAt: Date.now()};
+    await idb.put(key, photos[key]); pushPhoto(key);
     closeViewer(); renderVehicle(); toast('Fotoğraf kaydedildi');
   } catch(err){ toast('Fotoğraf okunamadı'); }
 };
@@ -679,47 +795,57 @@ function compressImage(file, max, q){
   });
 }
 function viewPhoto(k){
-  const n = SLOTS.find(s => s[0] === k)[1], v = $('#viewer');
-  v.innerHTML = `<div class="vt">${n}</div><div class="vi" onclick="closeViewer()"><img src="${photos[k].data}" alt=""></div>
+  const n = SLOTS.find(s => s[0] === k)[1], v = $('#viewer'), veh = vehicles[vehView.id];
+  v.innerHTML = `<div class="vt">${esc(veh.plaka)} · ${n}</div><div class="vi" onclick="closeViewer()"><img src="${photoOf(veh.id, k)}" alt=""></div>
     <div class="vb"><button class="btn" onclick="pickPhoto('${k}')">Değiştir</button><button class="btn bad" onclick="delPhoto('${k}')">Sil</button><button class="btn pri" onclick="closeViewer()">Kapat</button></div>`;
   v.classList.remove('hidden');
 }
 function closeViewer(){ $('#viewer').classList.add('hidden'); $('#viewer').innerHTML = ''; }
 async function delPhoto(k){
   if (!confirm('Bu fotoğraf silinsin mi?')) return;
-  photos[k] = {deleted: true, updatedAt: Date.now()};
-  await idb.put(k, photos[k]); pushPhoto(k); closeViewer(); renderVehicle();
+  const key = pkey(vehView.id, k);
+  photos[key] = {deleted: true, updatedAt: Date.now()};
+  await idb.put(key, photos[key]); pushPhoto(key); closeViewer(); renderVehicle();
 }
 
 /* ============ Yakıt formu ============ */
-let editId = null, lastEdited = [];
+let editId = null, lastEdited = [], efVid = null, priceTouched = false;
 const F = () => $('#ef').elements;
-const hasVehicle = () => !!vehicle.plaka;
 function openEntry(id = null){
-  if (!id && !hasVehicle()){
-    toast('Yakıt eklemek için önce aracını kaydet');
-    go('vehicle'); setTimeout(() => { const p = document.querySelector('#vf [name=plaka]'); if (p) p.focus(); }, 250);
-    return;
-  }
-  editId = id; lastEdited = [];
-  const f = F(), e = id ? entries[id] : null, L = activeList(), last = L[L.length - 1];
+  if (!id && !hasVehicle()){ toast('Yakıt eklemek için önce bir araç ekle'); newVeh(); return; }
+  editId = id; lastEdited = []; priceTouched = false;
+  const f = F(), e = id ? entries[id] : null;
+  efVid = e ? vidOf(e) : curVid();
   $('#sheetTitle').textContent = e ? 'Alımı düzenle' : 'Yeni yakıt alımı';
   $('#efDel').style.display = e ? '' : 'none';
   f.date.value = e ? e.date : todayStr();
   f.km.value = e ? e.km : '';
   f.liters.value = e ? toIn(e.liters) : '';
-  f.price.value = e ? toIn(e.price) : (last ? toIn(last.price) : '');
   f.total.value = e ? toIn(e.total) : '';
   f.full.checked = e ? !!e.full : true;
   f.station.value = e ? (e.station || '') : '';
   f.note.value = e ? (e.note || '') : '';
-  if (!e && last) lastEdited = ['price'];
-  const st = [...new Set(L.map(x => x.station).filter(Boolean))];
-  $('#stations').innerHTML = st.map(s => `<option value="${esc(s)}">`).join('');
+  f.price.value = e ? toIn(e.price) : '';
   ['liters','price','total'].forEach(k => f[k].classList.remove('calc'));
-  updPreview();
+  efVehUI(!e);
   $('#sheet').classList.remove('hidden');
   if (!e) setTimeout(() => f.km.focus(), 150);
+}
+function efVehUI(prefill){
+  const box = $('#efVeh');
+  if (multiVeh()){
+    box.style.display = '';
+    box.innerHTML = `<label class="fl">Araç</label><div class="chips" style="margin:0">${vehList().map(v =>
+      `<button type="button" class="chip ${v.id === efVid ? 'on' : ''}" onclick="efVid='${v.id}';efVehUI(${prefill})">🚗 ${esc(v.plaka)}</button>`).join('')}</div>`;
+  } else box.style.display = 'none';
+  const L = activeList(efVid), last = L[L.length - 1], f = F();
+  if (prefill){
+    const anyLast = Object.values(entries).filter(x => !x.deleted).sort((a, b) => a.date.localeCompare(b.date)).pop();
+    const src = last || anyLast;
+    if (!priceTouched){ f.price.value = src ? toIn(src.price) : ''; if (!lastEdited.length && src) lastEdited = ['price']; }
+  }
+  $('#stations').innerHTML = [...new Set(Object.values(entries).filter(x => !x.deleted).map(x => x.station).filter(Boolean))].map(s => `<option value="${esc(s)}">`).join('');
+  updPreview();
 }
 function closeEntry(){ $('#sheet').classList.add('hidden'); }
 function autoCalc(changed){
@@ -733,21 +859,17 @@ function autoCalc(changed){
   else if (has.has('liters') && has.has('total') && L > 0 && T > 0){ f.price.value = toIn(T / L); f.price.classList.add('calc'); }
   else if (has.has('price') && has.has('total') && P > 0 && T > 0){ f.liters.value = toIn(T / P); f.liters.classList.add('calc'); }
 }
-['liters','price','total'].forEach(k => F()[k].addEventListener('input', () => { autoCalc(k); updPreview(); }));
+['liters','price','total'].forEach(k => F()[k].addEventListener('input', () => { if (k === 'price') priceTouched = true; autoCalc(k); updPreview(); }));
 ['km','date'].forEach(k => F()[k].addEventListener('input', updPreview));
 F().full.addEventListener('change', updPreview);
 
-function prevEntryFor(km, excludeId){
-  return activeList().filter(e => e.id !== excludeId && e.km < km).pop();
-}
 function updPreview(){
-  const f = F(), km = parseKm(f.km.value), L = activeList().filter(e => e.id !== editId);
+  const f = F(), km = parseKm(f.km.value), L = activeList(efVid).filter(e => e.id !== editId);
   const last = L[L.length - 1];
   const hint = $('#kmHint');
   if (!km){ hint.innerHTML = last ? `Son kayıt: ${fmtInt(last.km)} km` : ''; $('#efPrev').style.display = 'none'; return; }
-  const prev = prevEntryFor(km, editId);
-  hint.innerHTML = prev ? `Önceki alımdan beri <b>+${fmtInt(km - prev.km)} km</b>` : (last ? `<span style="color:var(--bad)">Son kayıttan (${fmtInt(last.km)}) küçük!</span>` : 'İlk kayıt');
-  // Tüketim önizleme
+  const prev = L.filter(e => e.km < km).pop();
+  hint.innerHTML = prev ? `Önceki alımdan beri <b>+${fmtInt(km - prev.km)} km</b>` : (last ? `<span style="color:var(--bad)">Son kayıttan (${fmtInt(last.km)}) küçük!</span>` : 'Bu aracın ilk kaydı');
   const lit = parseDec(f.liters.value), tot = parseDec(f.total.value);
   let txt = '';
   if (f.full.checked && lit > 0){
@@ -763,25 +885,27 @@ function updPreview(){
 $('#ef').onsubmit = ev => {
   ev.preventDefault();
   const f = F();
+  if (!efVid || !vehicles[efVid]) return toast('Araç seç');
   const e = {
-    id: editId || newId(), date: f.date.value, km: parseKm(f.km.value),
+    id: editId || newId(), vehicleId: efVid, date: f.date.value, km: parseKm(f.km.value),
     liters: parseDec(f.liters.value), price: parseDec(f.price.value), total: parseDec(f.total.value),
     full: f.full.checked, station: f.station.value.trim(), note: f.note.value.trim(), updatedAt: Date.now()
   };
   if (!e.date) return toast('Tarih gir');
   if (!(e.km > 0)) return toast('Kilometre gir');
-  // eksik alanı tamamla
   if (!(e.total > 0) && e.liters > 0 && e.price > 0) e.total = e.liters * e.price;
   if (!(e.price > 0) && e.liters > 0 && e.total > 0) e.price = e.total / e.liters;
   if (!(e.liters > 0) && e.price > 0 && e.total > 0) e.liters = e.total / e.price;
   if (!(e.liters > 0) || !(e.total > 0) || !(e.price > 0)) return toast('Litre, fiyat ve tutardan en az ikisini gir');
   e.liters = Math.round(e.liters * 100) / 100; e.price = Math.round(e.price * 100) / 100; e.total = Math.round(e.total * 100) / 100;
-  const others = activeList().filter(x => x.id !== e.id);
-  if (others.some(x => x.km === e.km)) { if (!confirm('Bu kilometreyle başka bir kayıt var. Yine de kaydedilsin mi?')) return; }
+  const others = activeList(efVid).filter(x => x.id !== e.id);
+  if (others.some(x => x.km === e.km)) { if (!confirm('Bu araçta aynı kilometreyle başka bir kayıt var. Yine de kaydedilsin mi?')) return; }
   const byDate = others.filter(x => x.date <= e.date).sort((a, b) => b.km - a.km)[0];
   if (byDate && byDate.km > e.km && !confirm(`Daha eski tarihli bir kayıtta km daha yüksek (${fmtInt(byDate.km)}). Kilometre doğru mu?`)) return;
   entries[e.id] = e; saveEntries(); pushEntry(e);
-  closeEntry(); renderAll(); toast(editId ? 'Kayıt güncellendi' : 'Yakıt alımı kaydedildi');
+  closeEntry();
+  if (efVid !== curVid()){ activeVid = efVid; LS.set('yt_active', efVid); }
+  renderAll(); toast(editId ? 'Kayıt güncellendi' : `Yakıt alımı kaydedildi${multiVeh() ? ' · ' + vehicles[efVid].plaka : ''}`);
 };
 function deleteEntry(){
   if (!editId || !confirm('Bu kayıt silinsin mi?')) return;
@@ -790,11 +914,11 @@ function deleteEntry(){
   closeEntry(); renderAll(); toast('Kayıt silindi');
 }
 let _rz; window.addEventListener('resize', () => { clearTimeout(_rz); _rz = setTimeout(renderStats, 200); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape'){ closeEntry(); closeViewer(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape'){ closeEntry(); closeViewer(); closeAuth(); } });
 
 /* ============ Ayarlar ============ */
 function renderSettings(){
-  const el = $('#p-settings'), u = sync.user, n = activeList().length;
+  const el = $('#p-settings'), u = sync.user, n = Object.values(entries).filter(e => !e.deleted).length;
   let acc, btn = '';
   if (sync.mode === 'none') acc = 'Bulut kapalı · veriler bu cihazda';
   else if (sync.mode === 'loading') acc = 'Bağlanıyor…';
@@ -805,9 +929,9 @@ function renderSettings(){
   el.innerHTML = `<h2 class="pt">Ayarlar</h2>
     <div class="card tight">
       <div class="srow"><div><b>Hesap</b><small>${acc}</small></div>${btn}</div>
-      <div class="srow"><div><b>Yedek al</b><small>${n} kayıt · JSON dosyası</small></div><button class="btn sm" onclick="exportJSON()">İndir</button></div>
+      <div class="srow"><div><b>Yedek al</b><small>${vehList().length} araç · ${n} kayıt · JSON dosyası</small></div><button class="btn sm" onclick="exportJSON()">İndir</button></div>
       <div class="srow"><div><b>Yedekten yükle</b><small>Mevcut kayıtlarla birleştirilir</small></div><button class="btn sm" onclick="$('#importInput').click()">Seç</button></div>
-      <div class="srow"><div><b>Excel'e aktar</b><small>Tüm alımlar · CSV dosyası</small></div><button class="btn sm" onclick="exportCSV()">İndir</button></div>
+      <div class="srow"><div><b>Excel'e aktar</b><small>Tüm araçlar · CSV dosyası</small></div><button class="btn sm" onclick="exportCSV()">İndir</button></div>
     </div>
     <details class="card tight"><summary>📱 Ana ekrana ekleme</summary>
       <ul class="tips">
@@ -815,7 +939,7 @@ function renderSettings(){
         <li><b>iPhone:</b> Safari paylaş düğmesi → <i>Ana Ekrana Ekle</i>.</li>
         <li><b>Bilgisayar:</b> adres çubuğundaki yükle simgesi.</li>
       </ul></details>
-    <p class="small muted" style="text-align:center">Yakıt Takip · v1.2</p>`;
+    <p class="small muted" style="text-align:center">Yakıt Takip · v1.3</p>`;
 }
 function openAuth(){ $('#authSheet').classList.remove('hidden'); setTimeout(() => $('#lgE').focus(), 150); }
 function closeAuth(){ $('#authSheet').classList.add('hidden'); $('#lgP').value = ''; }
@@ -836,15 +960,16 @@ function download(name, text, type){
   a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
 function exportJSON(){
-  const data = {app: 'yakit-takip', version: 1, exportedAt: new Date().toISOString(), entries, vehicle, photos};
+  const data = {app: 'yakit-takip', version: 2, exportedAt: new Date().toISOString(), entries, vehicles, photos};
   download(`yakit-yedek-${todayStr()}.json`, JSON.stringify(data), 'application/json');
 }
 function exportCSV(){
-  const {L, res} = compute(), n = (v, d) => v == null || !isFinite(v) ? '' : v.toFixed(d).replace('.', ',');
+  const n = (v, d) => v == null || !isFinite(v) ? '' : v.toFixed(d).replace('.', ',');
   const q = s => '"' + String(s || '').replace(/"/g, '""') + '"';
-  const lines = ['Tarih;Kilometre;Litre;Litre Fiyatı;Tutar;Depo;Önceki Alımdan Km;L/100 km;TL/km;İstasyon;Not'];
-  L.forEach(e => { const r = res[e.id];
-    lines.push([dTR(e.date), e.km, n(e.liters, 2), n(e.price, 2), n(e.total, 2), e.full ? 'Full' : 'Kısmi', r.diffKm ?? '', n(r.l100, 2), n(r.tlkm, 2), q(e.station), q(e.note)].join(';')); });
+  const lines = ['Plaka;Tarih;Kilometre;Litre;Litre Fiyatı;Tutar;Depo;Önceki Alımdan Km;L/100 km;TL/km;İstasyon;Not'];
+  vehList().forEach(v => { const {L, res} = compute(v.id);
+    L.forEach(e => { const r = res[e.id];
+      lines.push([q(v.plaka), dTR(e.date), e.km, n(e.liters, 2), n(e.price, 2), n(e.total, 2), e.full ? 'Full' : 'Kısmi', r.diffKm ?? '', n(r.l100, 2), n(r.tlkm, 2), q(e.station), q(e.note)].join(';')); }); });
   download(`yakit-kayitlari-${todayStr()}.csv`, '﻿' + lines.join('\r\n'), 'text/csv;charset=utf-8');
 }
 $('#importInput').onchange = async ev => {
@@ -853,11 +978,13 @@ $('#importInput').onchange = async ev => {
     const d = JSON.parse(await f.text());
     if (d.app !== 'yakit-takip' || !d.entries) throw 0;
     if (!confirm(`${Object.values(d.entries).filter(x => !x.deleted).length} kayıt içeren yedek yüklensin mi? Mevcut kayıtlarla birleştirilir.`)) return;
+    const vs = {...(d.vehicles || {})};
+    if (d.vehicle && d.vehicle.plaka && !vs[MAIN]) vs[MAIN] = {...d.vehicle, id: MAIN, createdAt: 0};
+    for (const [k, v] of Object.entries(vs)){ const l = vehicles[k]; if (!l || (v.updatedAt || 0) >= (l.updatedAt || 0)){ vehicles[k] = v; pushVehicle(k); } }
     for (const [k, e] of Object.entries(d.entries)){ const l = entries[k]; if (!l || (e.updatedAt || 0) >= (l.updatedAt || 0)){ entries[k] = e; pushEntry(e); } }
-    saveEntries();
-    if (d.vehicle && (d.vehicle.updatedAt || 0) >= (vehicle.updatedAt || 0)){ vehicle = d.vehicle; saveVehicle(); pushVehicle(); }
-    for (const [k, p] of Object.entries(d.photos || {})){ const l = photos[k]; if (!l || (p.updatedAt || 0) >= (l.updatedAt || 0)){ photos[k] = p; await idb.put(k, p); pushPhoto(k); } }
-    vehDirty = false; renderAll(); toast('Yedek yüklendi');
+    saveVehicles(); saveEntries();
+    for (const [k0, p] of Object.entries(d.photos || {})){ const k = normPKey(k0), l = photos[k]; if (!l || (p.updatedAt || 0) >= (l.updatedAt || 0)){ photos[k] = p; await idb.put(k, p); pushPhoto(k); } }
+    vehDirty = false; vehView = {mode: 'list', id: null}; renderAll(); toast('Yedek yüklendi');
   } catch(e){ toast('Geçersiz yedek dosyası'); }
 };
 
@@ -892,16 +1019,17 @@ const fbRef = p => firebase.database().ref(`users/${sync.user.uid}/${p}`);
 function attach(){
   const con = firebase.database().ref('.info/connected');
   con.on('value', s => { sync.connected = !!s.val(); updSync(); if (page === 'settings') renderSettings(); });
-  const er = fbRef('entries'), vr = fbRef('vehicle'), pr = fbRef('photos');
+  const er = fbRef('entries'), vr = fbRef('vehicles'), lr = fbRef('vehicle'), pr = fbRef('photos');
+  vr.on('value', s => mergeVehicles(s.val() || {}));
+  lr.on('value', s => mergeLegacyVehicle(s.val()));
   er.on('value', s => mergeEntries(s.val() || {}));
-  vr.on('value', s => mergeVehicle(s.val()));
   pr.on('value', s => mergePhotos(s.val() || {}));
-  sync.refs = [con, er, vr, pr];
+  sync.refs = [con, vr, lr, er, pr];
 }
 function detach(){ sync.refs.forEach(r => r.off()); sync.refs = []; sync.connected = false; }
 const fail = e => console.warn('Firebase yazma hatası', e);
 function pushEntry(e){ if (sync.user) fbRef('entries/' + e.id).set(clean(e)).catch(fail); }
-function pushVehicle(){ if (sync.user && vehicle.updatedAt) fbRef('vehicle').set(clean(vehicle)).catch(fail); }
+function pushVehicle(id){ if (sync.user && vehicles[id]) fbRef('vehicles/' + id).set(clean(vehicles[id])).catch(fail); }
 function pushPhoto(k){ if (sync.user && photos[k]) fbRef('photos/' + k).set(clean(photos[k])).catch(fail); }
 function mergeEntries(remote){
   let ch = false;
@@ -910,13 +1038,19 @@ function mergeEntries(remote){
   if (ch){ saveEntries(); renderAll(); }
   sync.last = Date.now(); if (page === 'settings') renderSettings();
 }
-function mergeVehicle(r){
-  if (r && (r.updatedAt || 0) > (vehicle.updatedAt || 0)){ vehicle = r; saveVehicle(); renderAll(); }
-  else if (vehicle.updatedAt && (!r || vehicle.updatedAt > (r.updatedAt || 0))) pushVehicle();
+function mergeVehicles(remote){
+  let ch = false;
+  for (const [k, r] of Object.entries(remote)){ const l = vehicles[k]; if (!l || (r.updatedAt || 0) > (l.updatedAt || 0)){ vehicles[k] = r; ch = true; } }
+  for (const [k, l] of Object.entries(vehicles)){ const r = remote[k]; if (!r || (l.updatedAt || 0) > (r.updatedAt || 0)) pushVehicle(k); }
+  if (ch){ saveVehicles(); renderAll(); }
+}
+function mergeLegacyVehicle(r){   // eski sürümün tek araç kaydı
+  if (r && r.plaka && !vehicles[MAIN]){ vehicles[MAIN] = {...r, id: MAIN, createdAt: 0}; saveVehicles(); pushVehicle(MAIN); renderAll(); }
 }
 async function mergePhotos(remote){
   let ch = false;
-  for (const [k, r] of Object.entries(remote)){ const l = photos[k]; if (!l || (r.updatedAt || 0) > (l.updatedAt || 0)){ photos[k] = r; await idb.put(k, r); ch = true; } }
+  for (const [k0, r] of Object.entries(remote)){ const k = normPKey(k0), l = photos[k];
+    if (!l || (r.updatedAt || 0) > (l.updatedAt || 0)){ photos[k] = r; await idb.put(k, r); ch = true; } }
   for (const [k, l] of Object.entries(photos)){ const r = remote[k]; if (!r || (l.updatedAt || 0) > (r.updatedAt || 0)) pushPhoto(k); }
   if (ch && !vehDirty) renderVehicle();
 }
@@ -924,7 +1058,10 @@ async function mergePhotos(remote){
 /* ============ Başlat ============ */
 (async function(){
   await idb.open();
-  photos = await idb.all();
+  const raw = await idb.all();
+  for (const [k, v] of Object.entries(raw)){ const nk = normPKey(k);
+    if (nk !== k){ if (!raw[nk]){ photos[nk] = v; await idb.put(nk, v); } }
+    else photos[k] = v; }
   renderAll(); updSync();
   initFirebase();
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
