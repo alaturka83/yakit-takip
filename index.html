@@ -34,6 +34,19 @@ header{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px
 .brand img{width:34px;height:34px;border-radius:9px}
 .brand b{display:block;font-size:17px}
 .brand small{display:block;color:var(--mut);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.abtn{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:transparent;border-radius:999px;padding:4px 11px 4px 4px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.abtn.pri{background:var(--acc);border-color:var(--acc);color:#fff;padding:7px 14px}
+.av{width:28px;height:28px;border-radius:50%;background:var(--acc);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;position:relative;flex-shrink:0}
+.av i{position:absolute;right:-2px;bottom:-2px;width:11px;height:11px;border-radius:50%;border:2px solid var(--card);background:#9ca3af}
+.av i.ok{background:#16a34a}.av i.off{background:#f59e0b}
+.card.tight{padding:2px 14px}
+.srow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+.srow:first-child{border-top:0}
+.srow b{display:block;font-size:14.5px}
+.srow small{display:block;color:var(--mut);font-size:12.5px;overflow:hidden;text-overflow:ellipsis}
+.srow>div{min-width:0}
+details.card summary{padding:11px 0;cursor:pointer;font-weight:600;font-size:14.5px}
+details.card .tips{margin-top:0}
 .sync{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:transparent;border-radius:999px;padding:6px 11px;font-size:12.5px;color:var(--mut);cursor:pointer;white-space:nowrap}
 .sync i{width:9px;height:9px;border-radius:50%;background:#9ca3af;display:inline-block}
 .sync.ok i{background:#16a34a}.sync.off i{background:#f59e0b}.sync.err i{background:#dc2626}
@@ -170,7 +183,7 @@ label.fl{display:block;font-size:13px;color:var(--mut);margin-bottom:4px;font-we
     <img src="icon-192.png" alt="">
     <div><b>Yakıt Takip</b><small id="hdrSub">Araç bilgisi eklenmedi</small></div>
   </div>
-  <button id="syncBtn" class="sync" onclick="go('settings')"><i></i><span id="syncTxt">Yerel</span></button>
+  <div id="authBox"></div>
 </header>
 
 <nav id="nav">
@@ -212,6 +225,16 @@ label.fl{display:block;font-size:13px;color:var(--mut);margin-bottom:4px;font-we
         <button type="submit" class="btn pri" style="flex:1">Kaydet</button>
       </div>
     </form>
+  </div>
+</div>
+
+<div id="authSheet" class="sheet hidden" onclick="if(event.target===this)closeAuth()">
+  <div class="sheet-box" style="max-width:420px">
+    <div class="sheet-head"><h3>Giriş yap</h3><button class="x" type="button" onclick="closeAuth()">×</button></div>
+    <p class="small muted" style="margin:0 0 12px">Giriş yapınca kayıtların telefon ve bilgisayar arasında eşitlenir.</p>
+    <div class="f"><div class="w2"><label class="fl">E-posta</label><input class="in" id="lgE" type="email" autocomplete="username"></div>
+    <div class="w2"><label class="fl">Şifre</label><input class="in" id="lgP" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"></div></div>
+    <button class="btn pri full" style="margin-top:14px" onclick="login()">Giriş yap</button>
   </div>
 </div>
 
@@ -366,9 +389,16 @@ function remindersHTML(all = false){
 /* ============ Özet ============ */
 function renderHome(){
   const el = $('#p-home'), {L, res, segs} = compute();
+  if (!hasVehicle()){
+    el.innerHTML = `<div class="card">
+      <h2 style="margin:0 0 6px">Hoş geldin 👋</h2>
+      <p class="muted" style="margin:0 0 14px">Başlamak için önce aracını tanımla. Plaka yeterli, diğer bilgileri sonra da ekleyebilirsin.</p>
+      <button class="btn pri" onclick="go('vehicle');setTimeout(()=>document.querySelector('#vf [name=plaka]').focus(),250)">🚗 Aracımı ekle</button></div>`;
+    return;
+  }
   if (!L.length){
     el.innerHTML = remindersHTML() + `<div class="card">
-      <h2 style="margin:0 0 6px">Hoş geldin 👋</h2>
+      <h2 style="margin:0 0 6px">Araç hazır 👍</h2>
       <p class="muted" style="margin:0">İlk yakıt alımını ekleyerek başla.</p>
       <ul class="tips">
         <li>Mümkün olduğunca depoyu <b>full</b> doldurduğun alımları kaydet. Tüketim iki full alım arasında hesaplanır.</li>
@@ -516,7 +546,7 @@ function renderStats(){
 /* ============ Aracım ============ */
 const SLOTS = [['arac','Araç fotoğrafı'],['ruhsatOn','Ruhsat (ön yüz)'],['ruhsatArka','Ruhsat (arka yüz)'],['police','Sigorta / Kasko']];
 const VFIELDS = [
-  ['plaka','Plaka','34 ABC 123'],['marka','Marka','Örn. Renault'],['model','Model','Örn. Clio 1.0 TCe'],
+  ['plaka','Plaka *','34 ABC 123'],['marka','Marka','Örn. Renault'],['model','Model','Örn. Clio 1.0 TCe'],
   ['yil','Model yılı','2021','numeric'],['renk','Renk',''],['yakit','Yakıt türü','', 'sel'],
   ['depo','Depo hacmi (L)','Örn. 42','decimal'],['sasi','Şasi no',''],['motor','Motor no',''],
   ['sahip','Ruhsat sahibi',''],['tescil','Tescil tarihi','','date'],['muayene','Muayene bitiş','','date'],
@@ -549,10 +579,14 @@ function renderVehicle(){
 function saveVehicleForm(){
   const fd = new FormData($('#vf')), v = {};
   VFIELDS.forEach(([k]) => { const x = (fd.get(k) || '').toString().trim(); if (x) v[k] = x; });
-  if (v.plaka) v.plaka = v.plaka.toLocaleUpperCase('tr-TR');
+  if (!v.plaka){ toast('Plaka zorunlu'); const p = document.querySelector('#vf [name=plaka]'); if (p) p.focus(); return; }
+  v.plaka = v.plaka.toLocaleUpperCase('tr-TR');
+  const first = !hasVehicle();
   v.updatedAt = Date.now();
   vehicle = v; saveVehicle(); pushVehicle(); vehDirty = false;
-  renderAll(); toast('Araç bilgileri kaydedildi');
+  renderAll();
+  if (first && !activeList().length){ toast('Araç kaydedildi. Şimdi yakıt ekleyebilirsin'); go('home'); }
+  else toast('Araç bilgileri kaydedildi');
 }
 
 /* Fotoğraf */
@@ -596,7 +630,13 @@ async function delPhoto(k){
 /* ============ Yakıt formu ============ */
 let editId = null, lastEdited = [];
 const F = () => $('#ef').elements;
+const hasVehicle = () => !!vehicle.plaka;
 function openEntry(id = null){
+  if (!id && !hasVehicle()){
+    toast('Yakıt eklemek için önce aracını kaydet');
+    go('vehicle'); setTimeout(() => { const p = document.querySelector('#vf [name=plaka]'); if (p) p.focus(); }, 250);
+    return;
+  }
   editId = id; lastEdited = [];
   const f = F(), e = id ? entries[id] : null, L = activeList(), last = L[L.length - 1];
   $('#sheetTitle').textContent = e ? 'Alımı düzenle' : 'Yeni yakıt alımı';
@@ -689,41 +729,35 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape'){ closeEntry(
 
 /* ============ Ayarlar ============ */
 function renderSettings(){
-  const el = $('#p-settings'), u = sync.user;
-  let s;
-  if (sync.mode === 'none') s = `<p class="muted" style="margin:0 0 6px">Bulut senkronu kapalı. Veriler sadece bu cihazda saklanıyor.</p>
-    <p class="small muted" style="margin:0">Telefon ve bilgisayar arasında otomatik eşitleme için <b>config.js</b> dosyasına Firebase bilgilerini yaz.</p>`;
-  else if (sync.mode === 'loading') s = `<p class="muted">Firebase yükleniyor…</p>`;
-  else if (sync.mode === 'error') s = `<p style="color:var(--bad);margin:0 0 6px">Firebase yüklenemedi.</p><p class="small muted" style="margin:0">İnternet bağlantını kontrol et. Uygulama bu cihazda çalışmaya devam ediyor; bağlantı gelince sayfayı yenile.</p>`;
-  else if (!u) s = `<p class="muted" style="margin:0 0 12px">Cihazlar arası eşitleme için giriş yap.</p>
-    <div class="f"><div class="w2"><label class="fl">E-posta</label><input class="in" id="lgE" type="email" autocomplete="username"></div>
-    <div class="w2"><label class="fl">Şifre</label><input class="in" id="lgP" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"></div></div>
-    <button class="btn pri full" style="margin-top:12px" onclick="login()">Giriş yap</button>`;
-  else s = `<div class="st"><span style="color:${sync.connected ? 'var(--ok)' : 'var(--warn)'}">●</span>${sync.connected ? 'Eşitleme açık' : 'Çevrimdışı · bağlantı gelince eşitlenecek'}</div>
-    <p class="small muted" style="margin:0 0 12px">${esc(u.email)}${sync.last ? ' · son eşitleme ' + new Date(sync.last).toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'}) : ''}</p>
-    <button class="btn sm" onclick="logout()">Çıkış yap</button>`;
-  const n = activeList().length;
+  const el = $('#p-settings'), u = sync.user, n = activeList().length;
+  let acc, btn = '';
+  if (sync.mode === 'none') acc = 'Bulut kapalı · veriler bu cihazda';
+  else if (sync.mode === 'loading') acc = 'Bağlanıyor…';
+  else if (sync.mode === 'error') acc = 'Firebase yüklenemedi · internet bağlantını kontrol et';
+  else if (!u){ acc = 'Giriş yapılmadı · eşitleme kapalı'; btn = `<button class="btn sm pri" onclick="openAuth()">Giriş yap</button>`; }
+  else { acc = esc(u.email) + ' · ' + (sync.connected ? 'eşitlendi' + (sync.last ? ' ' + new Date(sync.last).toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'}) : '') : 'çevrimdışı');
+    btn = `<button class="btn sm" onclick="logout()">Çıkış</button>`; }
   el.innerHTML = `<h2 class="pt">Ayarlar</h2>
-    <div class="card"><h3>☁️ Bulut eşitleme</h3>${s}</div>
-    <div class="card"><h3>💾 Yedekleme</h3>
-      <p class="small muted" style="margin:0 0 12px">${n} yakıt kaydı. Ara sıra yedek almak iyi olur.</p>
-      <div class="row">
-        <button class="btn" onclick="exportJSON()">Yedek indir (JSON)</button>
-        <button class="btn" onclick="$('#importInput').click()">Yedekten geri yükle</button>
-        <button class="btn" onclick="exportCSV()">Excel'e aktar (CSV)</button>
-      </div></div>
-    <div class="card"><h3>📱 Ana ekrana ekle</h3>
-      <ul class="tips" style="margin:0">
-        <li><b>Android (Chrome):</b> sağ üstteki ⋮ menüsü → <i>Ana ekrana ekle</i> / <i>Uygulamayı yükle</i>.</li>
-        <li><b>iPhone (Safari):</b> paylaş düğmesi → <i>Ana Ekrana Ekle</i>.</li>
-        <li><b>Bilgisayar (Chrome/Edge):</b> adres çubuğundaki yükle simgesi.</li>
-      </ul></div>
-    <p class="small muted" style="text-align:center">Yakıt Takip · v1.0</p>`;
+    <div class="card tight">
+      <div class="srow"><div><b>Hesap</b><small>${acc}</small></div>${btn}</div>
+      <div class="srow"><div><b>Yedek al</b><small>${n} kayıt · JSON dosyası</small></div><button class="btn sm" onclick="exportJSON()">İndir</button></div>
+      <div class="srow"><div><b>Yedekten yükle</b><small>Mevcut kayıtlarla birleştirilir</small></div><button class="btn sm" onclick="$('#importInput').click()">Seç</button></div>
+      <div class="srow"><div><b>Excel'e aktar</b><small>Tüm alımlar · CSV dosyası</small></div><button class="btn sm" onclick="exportCSV()">İndir</button></div>
+    </div>
+    <details class="card tight"><summary>📱 Ana ekrana ekleme</summary>
+      <ul class="tips">
+        <li><b>Android:</b> Chrome ⋮ menüsü → <i>Ana ekrana ekle</i>.</li>
+        <li><b>iPhone:</b> Safari paylaş düğmesi → <i>Ana Ekrana Ekle</i>.</li>
+        <li><b>Bilgisayar:</b> adres çubuğundaki yükle simgesi.</li>
+      </ul></details>
+    <p class="small muted" style="text-align:center">Yakıt Takip · v1.1</p>`;
 }
+function openAuth(){ $('#authSheet').classList.remove('hidden'); setTimeout(() => $('#lgE').focus(), 150); }
+function closeAuth(){ $('#authSheet').classList.add('hidden'); $('#lgP').value = ''; }
 async function login(){
   const e = $('#lgE').value.trim(), p = $('#lgP').value;
   if (!e || !p) return toast('E-posta ve şifre gir');
-  try { await firebase.auth().signInWithEmailAndPassword(e, p); toast('Giriş yapıldı'); }
+  try { await firebase.auth().signInWithEmailAndPassword(e, p); closeAuth(); toast('Giriş yapıldı'); }
   catch(err){
     const m = {'auth/invalid-credential':'E-posta veya şifre hatalı','auth/wrong-password':'Şifre hatalı','auth/user-not-found':'Kullanıcı bulunamadı',
       'auth/invalid-email':'E-posta geçersiz','auth/network-request-failed':'İnternet bağlantısı yok','auth/too-many-requests':'Çok fazla deneme, biraz bekle'};
@@ -765,13 +799,13 @@ $('#importInput').onchange = async ev => {
 /* ============ Firebase eşitleme ============ */
 const sync = {mode: 'none', user: null, connected: false, refs: [], last: 0};
 function updSync(){
-  const b = $('#syncBtn'), t = $('#syncTxt'); b.className = 'sync';
-  if (sync.mode === 'none') t.textContent = 'Yerel';
-  else if (sync.mode === 'loading') t.textContent = 'Yükleniyor';
-  else if (sync.mode === 'error'){ b.classList.add('err'); t.textContent = 'Senkron yok'; }
-  else if (!sync.user){ b.classList.add('off'); t.textContent = 'Giriş yapılmadı'; }
-  else if (sync.connected){ b.classList.add('ok'); t.textContent = 'Eşitlendi'; }
-  else { b.classList.add('off'); t.textContent = 'Çevrimdışı'; }
+  const box = $('#authBox'), u = sync.user;
+  if (sync.mode === 'none') box.innerHTML = `<span class="sync"><i></i>Yerel</span>`;
+  else if (sync.mode === 'loading') box.innerHTML = `<span class="sync"><i></i>Bağlanıyor</span>`;
+  else if (sync.mode === 'error') box.innerHTML = `<span class="sync err"><i></i>Bağlantı yok</span>`;
+  else if (!u) box.innerHTML = `<button class="abtn pri" onclick="openAuth()">Giriş yap</button>`;
+  else box.innerHTML = `<button class="abtn" onclick="logout()" title="${esc(u.email)} · ${sync.connected ? 'Eşitlendi' : 'Çevrimdışı'}">
+      <span class="av">${esc((u.email || '?')[0].toLocaleUpperCase('tr-TR'))}<i class="${sync.connected ? 'ok' : 'off'}"></i></span>Çıkış</button>`;
 }
 const loadScript = src => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
 async function initFirebase(){
