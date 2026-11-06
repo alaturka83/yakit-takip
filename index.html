@@ -1,0 +1,835 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Yakıt Takip</title>
+<meta name="theme-color" content="#e8590c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Yakıt Takip">
+<style>
+:root{
+  --bg:#f4f5f7;--card:#ffffff;--tx:#1b1e24;--mut:#6b7280;--line:#e5e7eb;
+  --acc:#e8590c;--acc-soft:#fff1e8;--ok:#15803d;--ok-soft:#e8f6ec;--warn:#b45309;--warn-soft:#fdf3e1;
+  --bad:#dc2626;--bad-soft:#fdecec;--blue:#2563eb;--blue-soft:#eaf1fe;
+  --shadow:0 1px 2px rgba(0,0,0,.05),0 6px 18px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#111318;--card:#1b1e25;--tx:#eceef2;--mut:#9aa1ad;--line:#2c3039;
+    --acc:#ff7a33;--acc-soft:#2b1c13;--ok:#4ade80;--ok-soft:#14261b;--warn:#fbbf24;--warn-soft:#2a2213;
+    --bad:#f87171;--bad-soft:#2c1717;--blue:#60a5fa;--blue-soft:#15213a;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tx)}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+header{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top));display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand img{width:34px;height:34px;border-radius:9px}
+.brand b{display:block;font-size:17px}
+.brand small{display:block;color:var(--mut);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sync{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:transparent;border-radius:999px;padding:6px 11px;font-size:12.5px;color:var(--mut);cursor:pointer;white-space:nowrap}
+.sync i{width:9px;height:9px;border-radius:50%;background:#9ca3af;display:inline-block}
+.sync.ok i{background:#16a34a}.sync.off i{background:#f59e0b}.sync.err i{background:#dc2626}
+nav{position:fixed;bottom:0;left:0;right:0;z-index:20;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:transparent;padding:8px 2px 7px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11.5px;color:var(--mut);cursor:pointer}
+nav button svg{width:23px;height:23px}
+nav button.active{color:var(--acc);font-weight:600}
+main{max-width:1000px;margin:0 auto;padding:16px 16px 150px}
+.page{display:none}.page.active{display:block}
+h2.pt{font-size:20px;margin:4px 0 14px}
+h3{font-size:15.5px;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 13px;box-shadow:var(--shadow)}
+.kpi .l{font-size:12.5px;color:var(--mut)}
+.kpi .v{font-size:22px;font-weight:700;margin-top:2px;letter-spacing:-.3px}
+.kpi .v small{font-size:13px;font-weight:500;color:var(--mut);margin-left:3px}
+.kpi .s{font-size:12px;color:var(--mut);margin-top:2px}
+.kpi.hl{background:var(--acc-soft);border-color:transparent}
+.kpi.hl .v{color:var(--acc)}
+.up{color:var(--bad)}.down{color:var(--ok)}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:11px 16px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.bad{color:var(--bad)}
+.btn.sm{padding:7px 12px;font-size:13.5px;border-radius:10px}
+.btn.full{width:100%}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+#fab{position:fixed;right:16px;bottom:calc(74px + env(safe-area-inset-bottom));z-index:25;background:var(--acc);color:#fff;border:0;border-radius:999px;padding:14px 20px;font-size:16px;font-weight:700;box-shadow:0 6px 20px rgba(232,89,12,.4);cursor:pointer}
+.erow{display:flex;gap:12px;padding:11px 0;border-top:1px solid var(--line);cursor:pointer}
+.erow:first-child{border-top:0}
+.ed{width:48px;flex-shrink:0;text-align:center;background:var(--bg);border-radius:10px;padding:6px 0;align-self:flex-start}
+.ed b{display:block;font-size:18px;line-height:1.1}
+.ed span{font-size:11px;color:var(--mut)}
+.em{flex:1;min-width:0}
+.et{font-size:15px}
+.es{font-size:13px;color:var(--mut)}
+.eb{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.bdg{font-size:12px;padding:2px 8px;border-radius:999px;background:var(--bg);color:var(--mut);font-weight:600}
+.bdg.km{background:var(--blue-soft);color:var(--blue)}
+.bdg.l{background:var(--acc-soft);color:var(--acc)}
+.bdg.c{background:var(--ok-soft);color:var(--ok)}
+.bdg.p{background:var(--warn-soft);color:var(--warn)}
+.mh{display:flex;justify-content:space-between;align-items:baseline;margin:16px 2px 6px;font-weight:700}
+.mh span{font-size:13px;color:var(--mut);font-weight:500}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 13px;font-size:13.5px;cursor:pointer}
+.chip.on{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+.rem{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;margin-bottom:8px;font-size:14px}
+.rem.w{background:var(--warn-soft);color:var(--warn)}
+.rem.b{background:var(--bad-soft);color:var(--bad)}
+.rem.o{background:var(--ok-soft);color:var(--ok)}
+.tips{padding-left:18px;color:var(--mut);margin:8px 0 16px}
+.tips li{margin-bottom:6px}
+.chart svg{width:100%;height:auto;display:block}
+.chart .ax{stroke:var(--line);stroke-width:1}
+.chart text{fill:var(--mut);font-size:11.5px}
+.empty-chart{color:var(--mut);font-size:13.5px;padding:24px 0;text-align:center}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{text-align:right;padding:8px 6px;border-top:1px solid var(--line);white-space:nowrap}
+table.t th:first-child,table.t td:first-child{text-align:left}
+table.t th{color:var(--mut);font-weight:600;font-size:12.5px;border-top:0}
+.tw{overflow-x:auto}
+/* form */
+.f{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+.f .w2{grid-column:1/-1}
+.f>div{min-width:0}
+label.fl{display:block;font-size:13px;color:var(--mut);margin-bottom:4px;font-weight:600}
+.in{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:11px;padding:11px 12px;font-size:16px;outline:none}
+.in:focus{border-color:var(--acc);background:var(--card)}
+.in.calc{border-color:var(--ok);background:var(--ok-soft)}
+.hint{font-size:12.5px;color:var(--mut);margin-top:4px;min-height:1em}
+.hint b{color:var(--blue)}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg);border-radius:12px;padding:10px 12px}
+.sw small{display:block;color:var(--mut);font-size:12.5px}
+.tog{position:relative;width:50px;height:30px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.tog span{position:absolute;inset:0;background:#c5c9d0;border-radius:99px;transition:.2s;cursor:pointer}
+.tog span:before{content:"";position:absolute;width:24px;height:24px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.tog input:checked+span{background:var(--acc)}
+.tog input:checked+span:before{transform:translateX(20px)}
+.sheet{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
+.sheet.hidden,.viewer.hidden{display:none}
+.sheet-box{background:var(--card);width:100%;max-width:560px;max-height:94vh;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.sheet-head h3{margin:0;font-size:18px}
+.x{border:0;background:var(--bg);width:36px;height:36px;border-radius:50%;font-size:20px;cursor:pointer;line-height:1}
+.prev{background:var(--bg);border-radius:12px;padding:10px 12px;font-size:13.5px;color:var(--mut);margin-top:12px}
+.prev b{color:var(--tx)}
+/* photos */
+.ph{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.ptile{aspect-ratio:4/3;border-radius:14px;border:2px dashed var(--line);background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;overflow:hidden;position:relative;color:var(--mut);font-size:13px;font-weight:600;padding:0}
+.ptile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ptile.has{border-style:solid;border-color:transparent}
+.ptile .cap{position:absolute;left:0;right:0;bottom:0;padding:6px 8px;background:linear-gradient(transparent,rgba(0,0,0,.65));color:#fff;font-size:12.5px;text-align:left}
+.ptile .plus{font-size:26px;line-height:1}
+.viewer{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.92);display:flex;flex-direction:column}
+.viewer .vi{flex:1;display:flex;align-items:center;justify-content:center;padding:12px;min-height:0}
+.viewer img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
+.viewer .vb{display:flex;gap:10px;justify-content:center;padding:14px 14px calc(14px + env(safe-area-inset-bottom));flex-wrap:wrap}
+.viewer .vt{color:#fff;text-align:center;padding:calc(14px + env(safe-area-inset-top)) 14px 0;font-weight:600}
+.vlist{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:14px}
+.vlist div{padding:7px 0;border-top:1px solid var(--line)}
+.vlist span{display:block;font-size:12px;color:var(--mut)}
+#toast{position:fixed;left:50%;bottom:140px;transform:translateX(-50%) translateY(20px);background:#1f2937;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:80;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.muted{color:var(--mut)}
+.small{font-size:13px}
+.st{display:flex;align-items:center;gap:8px;font-weight:600;margin-bottom:10px}
+@media (min-width:700px){
+  .kpis{grid-template-columns:repeat(4,1fr)}
+  .ph{grid-template-columns:repeat(4,1fr)}
+  .f.v3{grid-template-columns:1fr 1fr 1fr}
+  .vlist{grid-template-columns:1fr 1fr 1fr}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .g2>.card{margin-bottom:0}
+}
+@media (min-width:900px){
+  nav{position:sticky;top:58px;bottom:auto;border-top:0;border-bottom:1px solid var(--line);justify-content:center;gap:6px;padding:4px}
+  nav button{flex:0 0 auto;flex-direction:row;gap:8px;padding:9px 16px;font-size:14px;border-radius:10px}
+  nav button svg{width:19px;height:19px}
+  nav button.active{background:var(--acc-soft)}
+  #fab{bottom:28px;right:28px}
+  main{padding-bottom:110px}
+  .sheet{align-items:center}
+  .sheet-box{border-radius:20px}
+  #toast{bottom:40px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <img src="icon-192.png" alt="">
+    <div><b>Yakıt Takip</b><small id="hdrSub">Araç bilgisi eklenmedi</small></div>
+  </div>
+  <button id="syncBtn" class="sync" onclick="go('settings')"><i></i><span id="syncTxt">Yerel</span></button>
+</header>
+
+<nav id="nav">
+  <button data-p="home" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Özet</button>
+  <button data-p="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Geçmiş</button>
+  <button data-p="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg>İstatistik</button>
+  <button data-p="vehicle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/><path d="M9.5 17h5M3 12h18"/></svg>Aracım</button>
+  <button data-p="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Ayarlar</button>
+</nav>
+
+<main>
+  <section id="p-home" class="page active"></section>
+  <section id="p-history" class="page"></section>
+  <section id="p-stats" class="page"></section>
+  <section id="p-vehicle" class="page"></section>
+  <section id="p-settings" class="page"></section>
+</main>
+
+<button id="fab" onclick="openEntry()">+ Yakıt Ekle</button>
+
+<!-- Yakıt kayıt formu -->
+<div id="sheet" class="sheet hidden" onclick="if(event.target===this)closeEntry()">
+  <div class="sheet-box">
+    <div class="sheet-head"><h3 id="sheetTitle">Yakıt Alımı</h3><button class="x" type="button" onclick="closeEntry()">×</button></div>
+    <form id="ef" autocomplete="off">
+      <div class="f">
+        <div><label class="fl">Tarih</label><input class="in" type="date" name="date" required></div>
+        <div><label class="fl">Kilometre (sayaç)</label><input class="in" name="km" inputmode="numeric" placeholder="Örn. 85420"><div class="hint" id="kmHint"></div></div>
+        <div><label class="fl">Litre</label><input class="in" name="liters" inputmode="decimal" placeholder="0,00"></div>
+        <div><label class="fl">Litre fiyatı (₺)</label><input class="in" name="price" inputmode="decimal" placeholder="0,00"></div>
+        <div class="w2"><label class="fl">Toplam tutar (₺)</label><input class="in" name="total" inputmode="decimal" placeholder="0,00"><div class="hint">Üç alandan herhangi ikisini yaz, üçüncüsü kendiliğinden hesaplanır.</div></div>
+        <div class="w2"><div class="sw"><div><b>Depo full dolduruldu</b><small>Tüketim, iki full alım arasında hesaplanır.</small></div><label class="tog"><input type="checkbox" name="full" checked><span></span></label></div></div>
+        <div class="w2"><label class="fl">İstasyon (isteğe bağlı)</label><input class="in" name="station" list="stations" placeholder="Örn. Shell Esenler"><datalist id="stations"></datalist></div>
+        <div class="w2"><label class="fl">Not (isteğe bağlı)</label><input class="in" name="note" placeholder="Örn. uzun yol öncesi"></div>
+      </div>
+      <div class="prev" id="efPrev"></div>
+      <div class="row" style="margin-top:14px">
+        <button type="button" class="btn bad" id="efDel" onclick="deleteEntry()" style="display:none">Sil</button>
+        <button type="submit" class="btn pri" style="flex:1">Kaydet</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="viewer" class="viewer hidden"></div>
+<div id="toast"></div>
+<input type="file" id="photoInput" accept="image/*" hidden>
+<input type="file" id="importInput" accept="application/json,.json" hidden>
+
+<script src="config.js"></script>
+<script>
+/* ============ Yardımcılar ============ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = (n, d = 2) => (isFinite(n) ? n : 0).toLocaleString('tr-TR', {minimumFractionDigits: d, maximumFractionDigits: d});
+const fmtInt = n => Math.round(n).toLocaleString('tr-TR');
+const money = n => fmt(n, 2) + ' ₺';
+const AYLAR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+const AY_K = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+const todayStr = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); };
+const dTR = s => s ? s.split('-').reverse().join('.') : '';
+const dayDiff = (a, b) => Math.round((new Date(b + 'T12:00') - new Date(a + 'T12:00')) / 864e5);
+const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const clean = o => JSON.parse(JSON.stringify(o));
+function parseDec(v){
+  if (typeof v === 'number') return v;
+  v = String(v || '').trim().replace(/\s|₺/g, '');
+  if (!v) return NaN;
+  if (v.includes(',') && v.includes('.')) v = v.replace(/\./g, '').replace(',', '.');
+  else if (v.includes(',')) v = v.replace(',', '.');
+  return parseFloat(v);
+}
+const parseKm = v => parseInt(String(v || '').replace(/\D/g, ''), 10);
+const toIn = (n, d = 2) => isFinite(n) ? n.toFixed(d).replace('.', ',') : '';
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2400); }
+
+/* ============ Yerel depolama ============ */
+const LS = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){ toast('Cihaz hafızası dolu, kayıt yapılamadı!'); } }
+};
+let entries = LS.get('yt_entries', {});
+let vehicle = LS.get('yt_vehicle', {});
+let photos = {};
+const saveEntries = () => LS.set('yt_entries', entries);
+const saveVehicle = () => LS.set('yt_vehicle', vehicle);
+
+const idb = {
+  db: null,
+  open(){ return new Promise(res => { try {
+    const r = indexedDB.open('yakit-takip', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('photos');
+    r.onsuccess = () => { this.db = r.result; res(); };
+    r.onerror = () => res();
+  } catch(e){ res(); } }); },
+  all(){ return new Promise(res => { if (!this.db) return res({}); const out = {};
+    const c = this.db.transaction('photos').objectStore('photos').openCursor();
+    c.onsuccess = () => { const cur = c.result; if (cur){ out[cur.key] = cur.value; cur.continue(); } else res(out); };
+    c.onerror = () => res(out); }); },
+  put(k, v){ return new Promise(res => { if (!this.db) return res();
+    const tx = this.db.transaction('photos', 'readwrite'); tx.objectStore('photos').put(v, k);
+    tx.oncomplete = res; tx.onerror = res; }); }
+};
+
+/* ============ Hesaplamalar ============ */
+const activeList = () => Object.values(entries).filter(e => !e.deleted)
+  .sort((a, b) => a.km - b.km || a.date.localeCompare(b.date));
+
+function compute(){
+  const L = activeList(), res = {}, segs = [];
+  let lf = -1, accL = 0, accC = 0;
+  L.forEach((e, i) => {
+    const r = {};
+    if (i > 0){ r.diffKm = e.km - L[i-1].km; r.days = dayDiff(L[i-1].date, e.date); }
+    if (e.full){
+      if (lf >= 0){
+        const km = e.km - L[lf].km, lit = accL + e.liters, cost = accC + e.total;
+        if (km > 0){
+          r.segKm = km; r.l100 = lit / km * 100; r.tlkm = cost / km;
+          segs.push({id: e.id, date: e.date, km, lit, cost, l100: r.l100, tlkm: r.tlkm});
+        }
+      } else r.first = true;
+      lf = i; accL = 0; accC = 0;
+    } else {
+      r.partial = true;
+      if (lf >= 0){ accL += e.liters; accC += e.total; }
+    }
+    res[e.id] = r;
+  });
+  return {L, res, segs};
+}
+function segTotals(segs){
+  const km = segs.reduce((s, x) => s + x.km, 0), lit = segs.reduce((s, x) => s + x.lit, 0), cost = segs.reduce((s, x) => s + x.cost, 0);
+  return {km, lit, cost, l100: km ? lit / km * 100 : NaN, tlkm: km ? cost / km : NaN};
+}
+
+/* ============ Gezinme ============ */
+let page = 'home';
+function go(p){
+  page = p;
+  document.querySelectorAll('.page').forEach(s => s.classList.toggle('active', s.id === 'p-' + p));
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('active', b.dataset.p === p));
+  $('#fab').style.display = (p === 'home' || p === 'history') ? '' : 'none';
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll('#nav button').forEach(b => b.onclick = () => go(b.dataset.p));
+
+function renderAll(){
+  renderHeader(); renderHome(); renderHistory(); renderStats();
+  if (!vehDirty) renderVehicle();
+  renderSettings();
+}
+function renderHeader(){
+  const t = [vehicle.plaka, [vehicle.marka, vehicle.model].filter(Boolean).join(' ')].filter(Boolean).join(' · ');
+  $('#hdrSub').textContent = t || 'Araç bilgisi eklenmedi';
+}
+
+/* ============ Ortak parçalar ============ */
+const kpi = (l, v, u, s = '', hl = false) =>
+  `<div class="kpi${hl ? ' hl' : ''}"><div class="l">${l}</div><div class="v">${v}${u ? `<small>${u}</small>` : ''}</div>${s ? `<div class="s">${s}</div>` : ''}</div>`;
+
+function entryRow(e, r = {}){
+  const [y, m, d] = e.date.split('-');
+  const b = [];
+  if (r.diffKm != null) b.push(`<span class="bdg km">+${fmtInt(r.diffKm)} km</span>`);
+  if (r.l100 != null) b.push(`<span class="bdg l">${fmt(r.l100, 1)} L/100 km</span>`);
+  if (r.tlkm != null) b.push(`<span class="bdg c">${fmt(r.tlkm, 2)} ₺/km</span>`);
+  if (r.partial) b.push(`<span class="bdg p">Kısmi alım</span>`);
+  if (r.first) b.push(`<span class="bdg">İlk full</span>`);
+  return `<div class="erow" onclick="openEntry('${e.id}')">
+    <div class="ed"><b>${+d}</b><span>${AY_K[+m-1]} ${y.slice(2)}</span></div>
+    <div class="em">
+      <div class="et"><b>${fmt(e.liters, 2)} L</b> · ${money(e.total)}</div>
+      <div class="es">${fmt(e.price, 2)} ₺/L · ${fmtInt(e.km)} km${e.station ? ' · ' + esc(e.station) : ''}</div>
+      ${e.note ? `<div class="es">📝 ${esc(e.note)}</div>` : ''}
+      ${b.length ? `<div class="eb">${b.join('')}</div>` : ''}
+    </div></div>`;
+}
+
+const DOCS = [['muayene','Muayene'],['sigorta','Trafik sigortası'],['kasko','Kasko']];
+function remindersHTML(all = false){
+  const out = [], t = todayStr();
+  DOCS.forEach(([k, n]) => {
+    if (!vehicle[k]) return;
+    const left = dayDiff(t, vehicle[k]);
+    if (left < 0) out.push(`<div class="rem b">⚠️ <div><b>${n}</b> süresi ${-left} gün önce doldu (${dTR(vehicle[k])})</div></div>`);
+    else if (left <= 30) out.push(`<div class="rem w">⏰ <div><b>${n}</b> bitişine ${left} gün kaldı (${dTR(vehicle[k])})</div></div>`);
+    else if (all) out.push(`<div class="rem o">✓ <div><b>${n}</b> geçerli · ${left} gün kaldı (${dTR(vehicle[k])})</div></div>`);
+  });
+  return out.join('');
+}
+
+/* ============ Özet ============ */
+function renderHome(){
+  const el = $('#p-home'), {L, res, segs} = compute();
+  if (!L.length){
+    el.innerHTML = remindersHTML() + `<div class="card">
+      <h2 style="margin:0 0 6px">Hoş geldin 👋</h2>
+      <p class="muted" style="margin:0">İlk yakıt alımını ekleyerek başla.</p>
+      <ul class="tips">
+        <li>Mümkün olduğunca depoyu <b>full</b> doldurduğun alımları kaydet. Tüketim iki full alım arasında hesaplanır.</li>
+        <li>Kilometreyi göstergedeki <b>toplam km</b> sayacından yaz.</li>
+        <li>Litre, litre fiyatı ve tutardan herhangi ikisini yazman yeterli.</li>
+      </ul>
+      <button class="btn pri" onclick="openEntry()">+ İlk alımı ekle</button></div>`;
+    return;
+  }
+  const last = L[L.length - 1], tot = segTotals(segs), lastSeg = segs[segs.length - 1];
+  const ym = todayStr().slice(0, 7), mE = L.filter(e => e.date.startsWith(ym));
+  const mSpent = mE.reduce((s, e) => s + e.total, 0), mLit = mE.reduce((s, e) => s + e.liters, 0);
+  let cmp = '';
+  if (lastSeg && segs.length > 1 && isFinite(tot.l100)){
+    const p = (lastSeg.l100 - tot.l100) / tot.l100 * 100;
+    cmp = Math.abs(p) < 1 ? 'Ortalamayla aynı' : `<span class="${p > 0 ? 'up' : 'down'}">${p > 0 ? '▲' : '▼'} %${fmt(Math.abs(p), 0)}</span> ortalamaya göre`;
+  }
+  const since = dayDiff(last.date, todayStr());
+  el.innerHTML = remindersHTML() + `
+    <div class="kpis">
+      ${kpi('Son tüketim', lastSeg ? fmt(lastSeg.l100, 1) : '—', 'L/100 km', lastSeg ? cmp || 'İlk ölçüm' : 'İkinci full alımda hesaplanır', true)}
+      ${kpi('Ortalama tüketim', isFinite(tot.l100) ? fmt(tot.l100, 1) : '—', 'L/100 km', segs.length ? `${segs.length} ölçüm, ${fmtInt(tot.km)} km` : '')}
+      ${kpi('Km başı maliyet', lastSeg ? fmt(lastSeg.tlkm, 2) : '—', '₺/km', isFinite(tot.tlkm) ? `Ortalama ${fmt(tot.tlkm, 2)} ₺/km` : '')}
+      ${kpi(AYLAR[new Date().getMonth()] + ' harcaması', fmt(mSpent, 0), '₺', mE.length ? `${mE.length} alım · ${fmt(mLit, 1)} L` : 'Bu ay alım yok')}
+    </div>
+    <div class="card">
+      <h3>Son alım</h3>
+      <div class="vlist" style="margin-bottom:4px">
+        <div><span>Tarih</span>${dTR(last.date)} · ${since === 0 ? 'bugün' : since + ' gün önce'}</div>
+        <div><span>Kilometre</span>${fmtInt(last.km)} km</div>
+        <div><span>Alınan</span>${fmt(last.liters, 2)} L · ${money(last.total)}</div>
+        <div><span>Litre fiyatı</span>${fmt(last.price, 2)} ₺</div>
+        <div><span>Önceki alımdan beri</span>${res[last.id].diffKm != null ? fmtInt(res[last.id].diffKm) + ' km' : '—'}</div>
+        <div><span>Depo</span>${last.full ? 'Full' : 'Kısmi'}</div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">Son alımlar</h3><button class="btn sm" onclick="go('history')">Tümü</button></div>
+      <div style="margin-top:6px">${L.slice(-5).reverse().map(e => entryRow(e, res[e.id])).join('')}</div>
+    </div>`;
+}
+
+/* ============ Geçmiş ============ */
+let histYear = 'all';
+function renderHistory(){
+  const el = $('#p-history'), {L, res} = compute();
+  if (!L.length){ el.innerHTML = `<h2 class="pt">Geçmiş</h2><div class="card muted">Henüz kayıt yok.</div>`; return; }
+  const years = [...new Set(L.map(e => e.date.slice(0, 4)))].sort().reverse();
+  if (histYear !== 'all' && !years.includes(histYear)) histYear = 'all';
+  const list = L.filter(e => histYear === 'all' || e.date.startsWith(histYear)).reverse();
+  const groups = {};
+  list.forEach(e => (groups[e.date.slice(0, 7)] ||= []).push(e));
+  const html = Object.keys(groups).sort().reverse().map(ym => {
+    const g = groups[ym].sort((a, b) => b.km - a.km), [y, m] = ym.split('-');
+    const sum = g.reduce((s, e) => s + e.total, 0), lit = g.reduce((s, e) => s + e.liters, 0);
+    return `<div class="mh">${AYLAR[+m-1]} ${y}<span>${fmt(lit, 1)} L · ${money(sum)}</span></div>
+      <div class="card" style="padding:4px 14px">${g.map(e => entryRow(e, res[e.id])).join('')}</div>`;
+  }).join('');
+  el.innerHTML = `<h2 class="pt">Geçmiş <span class="muted small">(${L.length} kayıt)</span></h2>
+    <div class="chips"><button class="chip ${histYear === 'all' ? 'on' : ''}" onclick="histYear='all';renderHistory()">Tümü</button>
+    ${years.map(y => `<button class="chip ${histYear === y ? 'on' : ''}" onclick="histYear='${y}';renderHistory()">${y}</button>`).join('')}</div>
+    ${html}`;
+}
+
+/* ============ Grafikler ============ */
+function lineChart(pts, {color = 'var(--acc)', d = 1, unit = ''} = {}){
+  if (pts.length < 2) return '<div class="empty-chart">Grafik için en az 2 veri gerekli.</div>';
+  const W = 640, H = 220, pl = 48, pr = 14, pt = 16, pb = 30;
+  const ys = pts.map(p => p.y); let mn = Math.min(...ys), mx = Math.max(...ys);
+  if (mn === mx){ mn -= 1; mx += 1; }
+  const pad = (mx - mn) * .12; mn -= pad; mx += pad;
+  const X = i => pl + (W - pl - pr) * i / (pts.length - 1), Y = v => pt + (H - pt - pb) * (1 - (v - mn) / (mx - mn));
+  let g = '';
+  for (let k = 0; k <= 3; k++){ const v = mn + (mx - mn) * k / 3, y = Y(v);
+    g += `<line class="ax" x1="${pl}" x2="${W - pr}" y1="${y}" y2="${y}"/><text x="${pl - 6}" y="${y + 4}" text-anchor="end">${fmt(v, d)}</text>`; }
+  const path = pts.map((p, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(p.y).toFixed(1)).join(' ');
+  const area = path + ` L${X(pts.length - 1)} ${H - pb} L${pl} ${H - pb} Z`;
+  const idx = [...new Set([0, Math.floor((pts.length - 1) / 2), pts.length - 1])];
+  const xl = idx.map(i => `<text x="${X(i)}" y="${H - 8}" text-anchor="${i === 0 ? 'start' : i === pts.length - 1 ? 'end' : 'middle'}">${pts[i].x}</text>`).join('');
+  const dots = pts.length <= 40 ? pts.map((p, i) => `<circle cx="${X(i)}" cy="${Y(p.y)}" r="3.5" fill="${color}"><title>${p.x}: ${fmt(p.y, d)} ${unit}</title></circle>`).join('') : '';
+  const lp = pts[pts.length - 1];
+  return `<svg viewBox="0 0 ${W} ${H}">${g}<path d="${area}" fill="${color}" opacity=".08"/><path d="${path}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round"/>${dots}
+    <text x="${X(pts.length - 1) - 6}" y="${Y(lp.y) - 10}" text-anchor="end" style="fill:var(--tx);font-weight:700">${fmt(lp.y, d)}</text>${xl}</svg>`;
+}
+function barChart(bars, {color = 'var(--acc)'} = {}){
+  if (!bars.some(b => b.y > 0)) return '<div class="empty-chart">Bu dönemde veri yok.</div>';
+  const W = 640, H = 220, pl = 48, pr = 8, pt = 22, pb = 30, mx = Math.max(...bars.map(b => b.y)) * 1.12;
+  const bw = (W - pl - pr) / bars.length, Y = v => pt + (H - pt - pb) * (1 - v / mx);
+  let g = '';
+  for (let k = 0; k <= 3; k++){ const v = mx * k / 3, y = Y(v);
+    g += `<line class="ax" x1="${pl}" x2="${W - pr}" y1="${y}" y2="${y}"/><text x="${pl - 6}" y="${y + 4}" text-anchor="end">${fmtInt(v)}</text>`; }
+  const r = bars.map((b, i) => {
+    const x = pl + bw * i + bw * .18, w = bw * .64, y = Y(b.y);
+    return `<rect x="${x}" y="${y}" width="${w}" height="${H - pb - y}" rx="4" fill="${color}"><title>${b.x}: ${money(b.y)}</title></rect>
+      <text x="${x + w / 2}" y="${H - 10}" text-anchor="middle">${b.x}</text>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${W} ${H}">${g}${r}</svg>`;
+}
+
+/* ============ İstatistik ============ */
+let statRange = 'all';
+function renderStats(){
+  const el = $('#p-stats'), {L, segs} = compute();
+  if (!L.length){ el.innerHTML = `<h2 class="pt">İstatistik</h2><div class="card muted">İstatistik için önce birkaç yakıt alımı ekle.</div>`; return; }
+  const t = todayStr(); let from = '0000';
+  if (statRange === '12'){ const d = new Date(); d.setFullYear(d.getFullYear() - 1); from = d.toISOString().slice(0, 10); }
+  if (statRange === 'year') from = t.slice(0, 4) + '-01-01';
+  const E = L.filter(e => e.date >= from), S = segs.filter(s => s.date >= from), tot = segTotals(S);
+  const spent = E.reduce((s, e) => s + e.total, 0), lit = E.reduce((s, e) => s + e.liters, 0);
+  const kmSpan = E.length > 1 ? E[E.length - 1].km - E[0].km : 0;
+  const byDate = [...E].sort((a, b) => a.date.localeCompare(b.date));
+  const daySpan = byDate.length > 1 ? dayDiff(byDate[0].date, byDate[byDate.length - 1].date) : 0;
+  // son 12 ay
+  const months = [], now = new Date();
+  for (let i = 11; i >= 0; i--){ const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0')); }
+  const mStat = months.map(ym => { const g = L.filter(e => e.date.startsWith(ym));
+    return {ym, n: g.length, lit: g.reduce((s, e) => s + e.liters, 0), tl: g.reduce((s, e) => s + e.total, 0)}; });
+  const priceSeries = byDate.map(e => ({x: dTR(e.date).slice(0, 5) + '.' + e.date.slice(2, 4), y: e.price}));
+  const consSeries = S.map(s => ({x: dTR(s.date).slice(0, 5) + '.' + s.date.slice(2, 4), y: s.l100}));
+  const rows = mStat.filter(m => m.n).reverse().map(m => { const [y, mo] = m.ym.split('-');
+    return `<tr><td>${AYLAR[+mo-1]} ${y}</td><td>${m.n}</td><td>${fmt(m.lit, 1)} L</td><td>${money(m.tl)}</td><td>${fmt(m.tl / m.lit, 2)} ₺</td></tr>`; }).join('');
+  el.innerHTML = `<h2 class="pt">İstatistik</h2>
+    <div class="chips">
+      ${[['all','Tüm zamanlar'],['12','Son 12 ay'],['year','Bu yıl']].map(([k, n]) => `<button class="chip ${statRange === k ? 'on' : ''}" onclick="statRange='${k}';renderStats()">${n}</button>`).join('')}
+    </div>
+    <div class="kpis">
+      ${kpi('Toplam harcama', fmt(spent, 0), '₺', `${E.length} alım`, true)}
+      ${kpi('Toplam yakıt', fmt(lit, 1), 'L', lit ? `Ort. ${fmt(spent / lit, 2)} ₺/L` : '')}
+      ${kpi('Ortalama tüketim', isFinite(tot.l100) ? fmt(tot.l100, 1) : '—', 'L/100 km', S.length ? `${S.length} full-full ölçüm` : 'İki full alım gerekli')}
+      ${kpi('Km başı maliyet', isFinite(tot.tlkm) ? fmt(tot.tlkm, 2) : '—', '₺/km', isFinite(tot.tlkm) ? `100 km ≈ ${fmt(tot.tlkm * 100, 0)} ₺` : '')}
+      ${kpi('Gidilen yol', fmtInt(kmSpan), 'km', daySpan ? `${daySpan} günde` : '')}
+      ${kpi('Günlük ortalama', daySpan ? fmt(kmSpan / daySpan, 0) : '—', 'km/gün', daySpan ? `≈ ${fmt(spent / daySpan * 30, 0)} ₺/ay yakıt` : '')}
+      ${kpi('Ort. alım aralığı', E.length > 1 ? fmtInt(kmSpan / (E.length - 1)) : '—', 'km', E.length > 1 && daySpan ? `≈ ${fmt(daySpan / (E.length - 1), 0)} günde bir` : '')}
+      ${kpi('En iyi / en kötü', S.length ? fmt(Math.min(...S.map(s => s.l100)), 1) + ' / ' + fmt(Math.max(...S.map(s => s.l100)), 1) : '—', S.length ? 'L/100' : '', 'Tüketim ölçümleri')}
+    </div>
+    <div class="card chart"><h3>Aylık harcama (son 12 ay)</h3>${barChart(mStat.map(m => ({x: AY_K[+m.ym.slice(5) - 1], y: m.tl})))}</div>
+    <div class="g2" style="margin-bottom:14px">
+      <div class="card chart"><h3>Litre fiyatı (₺)</h3>${lineChart(priceSeries, {color: 'var(--blue)', d: 2, unit: '₺'})}</div>
+      <div class="card chart"><h3>Tüketim (L/100 km)</h3>${lineChart(consSeries, {color: 'var(--acc)', d: 1, unit: 'L/100 km'})}</div>
+    </div>
+    ${rows ? `<div class="card"><h3>Aylık döküm (son 12 ay)</h3><div class="tw"><table class="t"><tr><th>Ay</th><th>Alım</th><th>Litre</th><th>Tutar</th><th>Ort. fiyat</th></tr>${rows}</table></div></div>` : ''}`;
+}
+
+/* ============ Aracım ============ */
+const SLOTS = [['arac','Araç fotoğrafı'],['ruhsatOn','Ruhsat (ön yüz)'],['ruhsatArka','Ruhsat (arka yüz)'],['police','Sigorta / Kasko']];
+const VFIELDS = [
+  ['plaka','Plaka','34 ABC 123'],['marka','Marka','Örn. Renault'],['model','Model','Örn. Clio 1.0 TCe'],
+  ['yil','Model yılı','2021','numeric'],['renk','Renk',''],['yakit','Yakıt türü','', 'sel'],
+  ['depo','Depo hacmi (L)','Örn. 42','decimal'],['sasi','Şasi no',''],['motor','Motor no',''],
+  ['sahip','Ruhsat sahibi',''],['tescil','Tescil tarihi','','date'],['muayene','Muayene bitiş','','date'],
+  ['sigorta','Trafik sigortası bitiş','','date'],['kasko','Kasko bitiş','','date'],['not','Not','','w']
+];
+let vehDirty = false;
+function renderVehicle(){
+  const el = $('#p-vehicle');
+  const tiles = SLOTS.map(([k, n]) => { const p = photos[k];
+    return p && p.data && !p.deleted
+      ? `<button class="ptile has" onclick="viewPhoto('${k}')"><img src="${p.data}" alt=""><span class="cap">${n}</span></button>`
+      : `<button class="ptile" onclick="pickPhoto('${k}')"><span class="plus">+</span>${n}</button>`; }).join('');
+  const field = ([k, n, ph, t]) => {
+    const v = esc(vehicle[k] || '');
+    let inp;
+    if (t === 'sel') inp = `<select class="in" name="${k}">${['','Benzin','Dizel','LPG','Benzin + LPG','Hibrit'].map(o => `<option ${vehicle[k] === o ? 'selected' : ''} value="${o}">${o || 'Seçiniz'}</option>`).join('')}</select>`;
+    else if (t === 'date') inp = `<input class="in" type="date" name="${k}" value="${v}">`;
+    else inp = `<input class="in" name="${k}" value="${v}" placeholder="${ph}" ${t === 'numeric' || t === 'decimal' ? `inputmode="${t}"` : ''}>`;
+    return `<div class="${t === 'w' ? 'w2' : ''}"><label class="fl">${n}</label>${inp}</div>`;
+  };
+  el.innerHTML = `<h2 class="pt">Aracım</h2>
+    ${remindersHTML(true)}
+    <div class="card"><h3>Fotoğraflar ve belgeler</h3><div class="ph">${tiles}</div>
+      <div class="hint" style="margin-top:8px">Fotoğraflar küçültülerek kaydedilir. Telefonda doğrudan kamerayla çekebilirsin.</div></div>
+    <div class="card"><h3>Araç kimliği</h3>
+      <form id="vf" class="f v3" oninput="vehDirty=true">${VFIELDS.map(field).join('')}</form>
+      <button class="btn pri full" style="margin-top:14px" onclick="saveVehicleForm()">Araç bilgilerini kaydet</button>
+    </div>`;
+}
+function saveVehicleForm(){
+  const fd = new FormData($('#vf')), v = {};
+  VFIELDS.forEach(([k]) => { const x = (fd.get(k) || '').toString().trim(); if (x) v[k] = x; });
+  if (v.plaka) v.plaka = v.plaka.toLocaleUpperCase('tr-TR');
+  v.updatedAt = Date.now();
+  vehicle = v; saveVehicle(); pushVehicle(); vehDirty = false;
+  renderAll(); toast('Araç bilgileri kaydedildi');
+}
+
+/* Fotoğraf */
+let photoSlot = null;
+function pickPhoto(k){ photoSlot = k; $('#photoInput').value = ''; $('#photoInput').click(); }
+$('#photoInput').onchange = async e => {
+  const f = e.target.files[0]; if (!f || !photoSlot) return;
+  try {
+    const data = await compressImage(f, 1400, .78);
+    photos[photoSlot] = {data, updatedAt: Date.now()};
+    await idb.put(photoSlot, photos[photoSlot]); pushPhoto(photoSlot);
+    closeViewer(); renderVehicle(); toast('Fotoğraf kaydedildi');
+  } catch(err){ toast('Fotoğraf okunamadı'); }
+};
+function compressImage(file, max, q){
+  return new Promise((res, rej) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      let {width: w, height: h} = img; const s = Math.min(1, max / Math.max(w, h));
+      w = Math.round(w * s); h = Math.round(h * s);
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h); URL.revokeObjectURL(url);
+      res(c.toDataURL('image/jpeg', q));
+    };
+    img.onerror = rej; img.src = url;
+  });
+}
+function viewPhoto(k){
+  const n = SLOTS.find(s => s[0] === k)[1], v = $('#viewer');
+  v.innerHTML = `<div class="vt">${n}</div><div class="vi" onclick="closeViewer()"><img src="${photos[k].data}" alt=""></div>
+    <div class="vb"><button class="btn" onclick="pickPhoto('${k}')">Değiştir</button><button class="btn bad" onclick="delPhoto('${k}')">Sil</button><button class="btn pri" onclick="closeViewer()">Kapat</button></div>`;
+  v.classList.remove('hidden');
+}
+function closeViewer(){ $('#viewer').classList.add('hidden'); $('#viewer').innerHTML = ''; }
+async function delPhoto(k){
+  if (!confirm('Bu fotoğraf silinsin mi?')) return;
+  photos[k] = {deleted: true, updatedAt: Date.now()};
+  await idb.put(k, photos[k]); pushPhoto(k); closeViewer(); renderVehicle();
+}
+
+/* ============ Yakıt formu ============ */
+let editId = null, lastEdited = [];
+const F = () => $('#ef').elements;
+function openEntry(id = null){
+  editId = id; lastEdited = [];
+  const f = F(), e = id ? entries[id] : null, L = activeList(), last = L[L.length - 1];
+  $('#sheetTitle').textContent = e ? 'Alımı düzenle' : 'Yeni yakıt alımı';
+  $('#efDel').style.display = e ? '' : 'none';
+  f.date.value = e ? e.date : todayStr();
+  f.km.value = e ? e.km : '';
+  f.liters.value = e ? toIn(e.liters) : '';
+  f.price.value = e ? toIn(e.price) : (last ? toIn(last.price) : '');
+  f.total.value = e ? toIn(e.total) : '';
+  f.full.checked = e ? !!e.full : true;
+  f.station.value = e ? (e.station || '') : '';
+  f.note.value = e ? (e.note || '') : '';
+  if (!e && last) lastEdited = ['price'];
+  const st = [...new Set(L.map(x => x.station).filter(Boolean))];
+  $('#stations').innerHTML = st.map(s => `<option value="${esc(s)}">`).join('');
+  ['liters','price','total'].forEach(k => f[k].classList.remove('calc'));
+  updPreview();
+  $('#sheet').classList.remove('hidden');
+  if (!e) setTimeout(() => f.km.focus(), 150);
+}
+function closeEntry(){ $('#sheet').classList.add('hidden'); }
+function autoCalc(changed){
+  const f = F();
+  lastEdited = [changed, ...lastEdited.filter(x => x !== changed)].slice(0, 2);
+  const L = parseDec(f.liters.value), P = parseDec(f.price.value), T = parseDec(f.total.value);
+  const has = new Set(lastEdited);
+  ['liters','price','total'].forEach(k => f[k].classList.remove('calc'));
+  if (lastEdited.length < 2) return;
+  if (has.has('liters') && has.has('price') && L > 0 && P > 0){ f.total.value = toIn(L * P); f.total.classList.add('calc'); }
+  else if (has.has('liters') && has.has('total') && L > 0 && T > 0){ f.price.value = toIn(T / L); f.price.classList.add('calc'); }
+  else if (has.has('price') && has.has('total') && P > 0 && T > 0){ f.liters.value = toIn(T / P); f.liters.classList.add('calc'); }
+}
+['liters','price','total'].forEach(k => F()[k].addEventListener('input', () => { autoCalc(k); updPreview(); }));
+['km','date'].forEach(k => F()[k].addEventListener('input', updPreview));
+F().full.addEventListener('change', updPreview);
+
+function prevEntryFor(km, excludeId){
+  return activeList().filter(e => e.id !== excludeId && e.km < km).pop();
+}
+function updPreview(){
+  const f = F(), km = parseKm(f.km.value), L = activeList().filter(e => e.id !== editId);
+  const last = L[L.length - 1];
+  const hint = $('#kmHint');
+  if (!km){ hint.innerHTML = last ? `Son kayıt: ${fmtInt(last.km)} km` : ''; $('#efPrev').style.display = 'none'; return; }
+  const prev = prevEntryFor(km, editId);
+  hint.innerHTML = prev ? `Önceki alımdan beri <b>+${fmtInt(km - prev.km)} km</b>` : (last ? `<span style="color:var(--bad)">Son kayıttan (${fmtInt(last.km)}) küçük!</span>` : 'İlk kayıt');
+  // Tüketim önizleme
+  const lit = parseDec(f.liters.value), tot = parseDec(f.total.value);
+  let txt = '';
+  if (f.full.checked && lit > 0){
+    const before = L.filter(e => e.km < km);
+    let i = before.length - 1, accL = lit, accC = tot > 0 ? tot : 0;
+    while (i >= 0 && !before[i].full){ accL += before[i].liters; accC += before[i].total; i--; }
+    if (i >= 0){ const seg = km - before[i].km;
+      if (seg > 0) txt = `Bu alımla tüketim: <b>${fmt(accL / seg * 100, 1)} L/100 km</b>${accC ? ` · <b>${fmt(accC / seg, 2)} ₺/km</b>` : ''} <span>(${fmtInt(seg)} km)</span>`; }
+    else txt = 'Bu ilk full alım. Tüketim bir sonraki full alımda hesaplanacak.';
+  } else if (!f.full.checked) txt = 'Kısmi alım: litreler bir sonraki full alımın hesabına eklenecek.';
+  $('#efPrev').innerHTML = txt; $('#efPrev').style.display = txt ? '' : 'none';
+}
+$('#ef').onsubmit = ev => {
+  ev.preventDefault();
+  const f = F();
+  const e = {
+    id: editId || newId(), date: f.date.value, km: parseKm(f.km.value),
+    liters: parseDec(f.liters.value), price: parseDec(f.price.value), total: parseDec(f.total.value),
+    full: f.full.checked, station: f.station.value.trim(), note: f.note.value.trim(), updatedAt: Date.now()
+  };
+  if (!e.date) return toast('Tarih gir');
+  if (!(e.km > 0)) return toast('Kilometre gir');
+  // eksik alanı tamamla
+  if (!(e.total > 0) && e.liters > 0 && e.price > 0) e.total = e.liters * e.price;
+  if (!(e.price > 0) && e.liters > 0 && e.total > 0) e.price = e.total / e.liters;
+  if (!(e.liters > 0) && e.price > 0 && e.total > 0) e.liters = e.total / e.price;
+  if (!(e.liters > 0) || !(e.total > 0) || !(e.price > 0)) return toast('Litre, fiyat ve tutardan en az ikisini gir');
+  e.liters = Math.round(e.liters * 100) / 100; e.price = Math.round(e.price * 100) / 100; e.total = Math.round(e.total * 100) / 100;
+  const others = activeList().filter(x => x.id !== e.id);
+  if (others.some(x => x.km === e.km)) { if (!confirm('Bu kilometreyle başka bir kayıt var. Yine de kaydedilsin mi?')) return; }
+  const byDate = others.filter(x => x.date <= e.date).sort((a, b) => b.km - a.km)[0];
+  if (byDate && byDate.km > e.km && !confirm(`Daha eski tarihli bir kayıtta km daha yüksek (${fmtInt(byDate.km)}). Kilometre doğru mu?`)) return;
+  entries[e.id] = e; saveEntries(); pushEntry(e);
+  closeEntry(); renderAll(); toast(editId ? 'Kayıt güncellendi' : 'Yakıt alımı kaydedildi');
+};
+function deleteEntry(){
+  if (!editId || !confirm('Bu kayıt silinsin mi?')) return;
+  const e = {...entries[editId], deleted: true, updatedAt: Date.now()};
+  entries[editId] = e; saveEntries(); pushEntry(e);
+  closeEntry(); renderAll(); toast('Kayıt silindi');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape'){ closeEntry(); closeViewer(); } });
+
+/* ============ Ayarlar ============ */
+function renderSettings(){
+  const el = $('#p-settings'), u = sync.user;
+  let s;
+  if (sync.mode === 'none') s = `<p class="muted" style="margin:0 0 6px">Bulut senkronu kapalı. Veriler sadece bu cihazda saklanıyor.</p>
+    <p class="small muted" style="margin:0">Telefon ve bilgisayar arasında otomatik eşitleme için <b>config.js</b> dosyasına Firebase bilgilerini yaz.</p>`;
+  else if (sync.mode === 'loading') s = `<p class="muted">Firebase yükleniyor…</p>`;
+  else if (sync.mode === 'error') s = `<p style="color:var(--bad);margin:0 0 6px">Firebase yüklenemedi.</p><p class="small muted" style="margin:0">İnternet bağlantını kontrol et. Uygulama bu cihazda çalışmaya devam ediyor; bağlantı gelince sayfayı yenile.</p>`;
+  else if (!u) s = `<p class="muted" style="margin:0 0 12px">Cihazlar arası eşitleme için giriş yap.</p>
+    <div class="f"><div class="w2"><label class="fl">E-posta</label><input class="in" id="lgE" type="email" autocomplete="username"></div>
+    <div class="w2"><label class="fl">Şifre</label><input class="in" id="lgP" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"></div></div>
+    <button class="btn pri full" style="margin-top:12px" onclick="login()">Giriş yap</button>`;
+  else s = `<div class="st"><span style="color:${sync.connected ? 'var(--ok)' : 'var(--warn)'}">●</span>${sync.connected ? 'Eşitleme açık' : 'Çevrimdışı · bağlantı gelince eşitlenecek'}</div>
+    <p class="small muted" style="margin:0 0 12px">${esc(u.email)}${sync.last ? ' · son eşitleme ' + new Date(sync.last).toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'}) : ''}</p>
+    <button class="btn sm" onclick="logout()">Çıkış yap</button>`;
+  const n = activeList().length;
+  el.innerHTML = `<h2 class="pt">Ayarlar</h2>
+    <div class="card"><h3>☁️ Bulut eşitleme</h3>${s}</div>
+    <div class="card"><h3>💾 Yedekleme</h3>
+      <p class="small muted" style="margin:0 0 12px">${n} yakıt kaydı. Ara sıra yedek almak iyi olur.</p>
+      <div class="row">
+        <button class="btn" onclick="exportJSON()">Yedek indir (JSON)</button>
+        <button class="btn" onclick="$('#importInput').click()">Yedekten geri yükle</button>
+        <button class="btn" onclick="exportCSV()">Excel'e aktar (CSV)</button>
+      </div></div>
+    <div class="card"><h3>📱 Ana ekrana ekle</h3>
+      <ul class="tips" style="margin:0">
+        <li><b>Android (Chrome):</b> sağ üstteki ⋮ menüsü → <i>Ana ekrana ekle</i> / <i>Uygulamayı yükle</i>.</li>
+        <li><b>iPhone (Safari):</b> paylaş düğmesi → <i>Ana Ekrana Ekle</i>.</li>
+        <li><b>Bilgisayar (Chrome/Edge):</b> adres çubuğundaki yükle simgesi.</li>
+      </ul></div>
+    <p class="small muted" style="text-align:center">Yakıt Takip · v1.0</p>`;
+}
+async function login(){
+  const e = $('#lgE').value.trim(), p = $('#lgP').value;
+  if (!e || !p) return toast('E-posta ve şifre gir');
+  try { await firebase.auth().signInWithEmailAndPassword(e, p); toast('Giriş yapıldı'); }
+  catch(err){
+    const m = {'auth/invalid-credential':'E-posta veya şifre hatalı','auth/wrong-password':'Şifre hatalı','auth/user-not-found':'Kullanıcı bulunamadı',
+      'auth/invalid-email':'E-posta geçersiz','auth/network-request-failed':'İnternet bağlantısı yok','auth/too-many-requests':'Çok fazla deneme, biraz bekle'};
+    toast(m[err.code] || ('Giriş hatası: ' + err.code));
+  }
+}
+function logout(){ if (confirm('Çıkış yapılsın mı? Veriler bu cihazda kalır.')) firebase.auth().signOut(); }
+
+function download(name, text, type){
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type}));
+  a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+function exportJSON(){
+  const data = {app: 'yakit-takip', version: 1, exportedAt: new Date().toISOString(), entries, vehicle, photos};
+  download(`yakit-yedek-${todayStr()}.json`, JSON.stringify(data), 'application/json');
+}
+function exportCSV(){
+  const {L, res} = compute(), n = (v, d) => v == null || !isFinite(v) ? '' : v.toFixed(d).replace('.', ',');
+  const q = s => '"' + String(s || '').replace(/"/g, '""') + '"';
+  const lines = ['Tarih;Kilometre;Litre;Litre Fiyatı;Tutar;Depo;Önceki Alımdan Km;L/100 km;TL/km;İstasyon;Not'];
+  L.forEach(e => { const r = res[e.id];
+    lines.push([dTR(e.date), e.km, n(e.liters, 2), n(e.price, 2), n(e.total, 2), e.full ? 'Full' : 'Kısmi', r.diffKm ?? '', n(r.l100, 2), n(r.tlkm, 2), q(e.station), q(e.note)].join(';')); });
+  download(`yakit-kayitlari-${todayStr()}.csv`, '﻿' + lines.join('\r\n'), 'text/csv;charset=utf-8');
+}
+$('#importInput').onchange = async ev => {
+  const f = ev.target.files[0]; ev.target.value = ''; if (!f) return;
+  try {
+    const d = JSON.parse(await f.text());
+    if (d.app !== 'yakit-takip' || !d.entries) throw 0;
+    if (!confirm(`${Object.values(d.entries).filter(x => !x.deleted).length} kayıt içeren yedek yüklensin mi? Mevcut kayıtlarla birleştirilir.`)) return;
+    for (const [k, e] of Object.entries(d.entries)){ const l = entries[k]; if (!l || (e.updatedAt || 0) >= (l.updatedAt || 0)){ entries[k] = e; pushEntry(e); } }
+    saveEntries();
+    if (d.vehicle && (d.vehicle.updatedAt || 0) >= (vehicle.updatedAt || 0)){ vehicle = d.vehicle; saveVehicle(); pushVehicle(); }
+    for (const [k, p] of Object.entries(d.photos || {})){ const l = photos[k]; if (!l || (p.updatedAt || 0) >= (l.updatedAt || 0)){ photos[k] = p; await idb.put(k, p); pushPhoto(k); } }
+    vehDirty = false; renderAll(); toast('Yedek yüklendi');
+  } catch(e){ toast('Geçersiz yedek dosyası'); }
+};
+
+/* ============ Firebase eşitleme ============ */
+const sync = {mode: 'none', user: null, connected: false, refs: [], last: 0};
+function updSync(){
+  const b = $('#syncBtn'), t = $('#syncTxt'); b.className = 'sync';
+  if (sync.mode === 'none') t.textContent = 'Yerel';
+  else if (sync.mode === 'loading') t.textContent = 'Yükleniyor';
+  else if (sync.mode === 'error'){ b.classList.add('err'); t.textContent = 'Senkron yok'; }
+  else if (!sync.user){ b.classList.add('off'); t.textContent = 'Giriş yapılmadı'; }
+  else if (sync.connected){ b.classList.add('ok'); t.textContent = 'Eşitlendi'; }
+  else { b.classList.add('off'); t.textContent = 'Çevrimdışı'; }
+}
+const loadScript = src => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+async function initFirebase(){
+  const c = window.FIREBASE_CONFIG;
+  if (!c || !c.apiKey || /BURAYA/.test(c.apiKey) || !c.databaseURL){ sync.mode = 'none'; updSync(); return; }
+  sync.mode = 'loading'; updSync(); renderSettings();
+  try {
+    const b = 'https://www.gstatic.com/firebasejs/10.14.1/';
+    await loadScript(b + 'firebase-app-compat.js');
+    await loadScript(b + 'firebase-auth-compat.js');
+    await loadScript(b + 'firebase-database-compat.js');
+    firebase.initializeApp(c);
+    sync.mode = 'ready';
+    firebase.auth().onAuthStateChanged(u => { detach(); sync.user = u; if (u) attach(); updSync(); renderSettings(); });
+  } catch(e){ sync.mode = 'error'; }
+  updSync(); renderSettings();
+}
+const fbRef = p => firebase.database().ref(`users/${sync.user.uid}/${p}`);
+function attach(){
+  const con = firebase.database().ref('.info/connected');
+  con.on('value', s => { sync.connected = !!s.val(); updSync(); if (page === 'settings') renderSettings(); });
+  const er = fbRef('entries'), vr = fbRef('vehicle'), pr = fbRef('photos');
+  er.on('value', s => mergeEntries(s.val() || {}));
+  vr.on('value', s => mergeVehicle(s.val()));
+  pr.on('value', s => mergePhotos(s.val() || {}));
+  sync.refs = [con, er, vr, pr];
+}
+function detach(){ sync.refs.forEach(r => r.off()); sync.refs = []; sync.connected = false; }
+const fail = e => console.warn('Firebase yazma hatası', e);
+function pushEntry(e){ if (sync.user) fbRef('entries/' + e.id).set(clean(e)).catch(fail); }
+function pushVehicle(){ if (sync.user && vehicle.updatedAt) fbRef('vehicle').set(clean(vehicle)).catch(fail); }
+function pushPhoto(k){ if (sync.user && photos[k]) fbRef('photos/' + k).set(clean(photos[k])).catch(fail); }
+function mergeEntries(remote){
+  let ch = false;
+  for (const [k, r] of Object.entries(remote)){ const l = entries[k]; if (!l || (r.updatedAt || 0) > (l.updatedAt || 0)){ entries[k] = r; ch = true; } }
+  for (const [k, l] of Object.entries(entries)){ const r = remote[k]; if (!r || (l.updatedAt || 0) > (r.updatedAt || 0)) pushEntry(l); }
+  if (ch){ saveEntries(); renderAll(); }
+  sync.last = Date.now(); if (page === 'settings') renderSettings();
+}
+function mergeVehicle(r){
+  if (r && (r.updatedAt || 0) > (vehicle.updatedAt || 0)){ vehicle = r; saveVehicle(); renderAll(); }
+  else if (vehicle.updatedAt && (!r || vehicle.updatedAt > (r.updatedAt || 0))) pushVehicle();
+}
+async function mergePhotos(remote){
+  let ch = false;
+  for (const [k, r] of Object.entries(remote)){ const l = photos[k]; if (!l || (r.updatedAt || 0) > (l.updatedAt || 0)){ photos[k] = r; await idb.put(k, r); ch = true; } }
+  for (const [k, l] of Object.entries(photos)){ const r = remote[k]; if (!r || (l.updatedAt || 0) > (r.updatedAt || 0)) pushPhoto(k); }
+  if (ch && !vehDirty) renderVehicle();
+}
+
+/* ============ Başlat ============ */
+(async function(){
+  await idb.open();
+  photos = await idb.all();
+  renderAll(); updSync();
+  initFirebase();
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+})();
+</script>
+</body>
+</html>
