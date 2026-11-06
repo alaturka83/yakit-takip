@@ -155,11 +155,75 @@ label.fl{display:block;font-size:13px;color:var(--mut);margin-bottom:4px;font-we
 .muted{color:var(--mut)}
 .small{font-size:13px}
 .st{display:flex;align-items:center;gap:8px;font-weight:600;margin-bottom:10px}
+/* ===== Kompakt düzen ===== */
+body{font-size:14.5px}
+header{padding:7px 14px;padding-top:calc(7px + env(safe-area-inset-top))}
+.brand img{width:30px;height:30px;border-radius:8px}
+.brand b{font-size:16px}
+.brand small{font-size:12px}
+main{padding:12px 12px 140px}
+h2.pt{font-size:18px;margin:2px 2px 10px}
+h3{font-size:14.5px;margin:0 0 8px}
+.card{padding:12px;border-radius:14px;margin-bottom:10px}
+.kpis{gap:8px;margin-bottom:10px}
+.kpi{padding:9px 11px;border-radius:12px}
+.kpi .l{font-size:12px}
+.kpi .v{font-size:19px;margin-top:0}
+.kpi .v small{font-size:12px}
+.kpi .s{font-size:11.5px;margin-top:1px;line-height:1.3}
+.btn{padding:9px 14px;border-radius:11px}
+.btn.sm{padding:6px 11px;font-size:13px;border-radius:9px}
+#fab{padding:11px 17px;font-size:15px;right:12px;bottom:calc(68px + env(safe-area-inset-bottom))}
+.erow{gap:10px;padding:9px 0}
+.ed{width:40px;padding:4px 0;border-radius:9px}
+.ed b{font-size:16px}
+.ed span{font-size:10.5px}
+.et{font-size:14px}
+.es{font-size:12.5px}
+.eb{gap:4px;margin-top:4px}
+.bdg{font-size:11.5px;padding:1px 7px}
+.mh{margin:12px 2px 5px;font-size:14px}
+.mh span{font-size:12.5px}
+.chips{gap:5px;margin-bottom:10px}
+.chip{padding:5px 11px;font-size:13px}
+.rem{padding:8px 11px;border-radius:11px;margin-bottom:8px;font-size:13px;gap:8px}
+.tips{font-size:13.5px}
+table.t{font-size:13px}
+table.t th,table.t td{padding:6px 5px}
+table.t th{font-size:11.5px}
+.f{gap:8px 10px}
+label.fl{font-size:12px;margin-bottom:3px}
+.in{padding:8px 10px;border-radius:10px}
+.hint{font-size:11.5px;margin-top:3px}
+.sw{padding:8px 10px;border-radius:11px}
+.sw b{font-size:14px}
+.sw small{font-size:11.5px}
+.tog{width:44px;height:26px}
+.tog span:before{width:20px;height:20px}
+.tog input:checked+span:before{transform:translateX(18px)}
+.sheet-box{padding:14px 14px calc(14px + env(safe-area-inset-bottom))}
+.sheet-head{margin-bottom:10px}
+.sheet-head h3{font-size:16.5px}
+.x{width:32px;height:32px;font-size:18px}
+.prev{padding:8px 10px;font-size:12.5px;margin-top:10px}
+.ph{grid-template-columns:repeat(4,1fr);gap:8px}
+.ptile{aspect-ratio:1;border-radius:11px;font-size:11px;gap:2px;text-align:center;line-height:1.2}
+.ptile .plus{font-size:20px}
+.ptile .cap{font-size:10.5px;padding:4px 5px}
+.vlist{grid-template-columns:repeat(3,1fr);gap:0 10px;font-size:13.5px}
+.vlist div{padding:6px 0}
+.vlist span{font-size:11px}
+.lh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:4px}
+.lh h3{margin:0}
+.lh span{font-size:12px;color:var(--mut)}
+.srow{padding:9px 0}
+.srow b{font-size:14px}
+.srow small{font-size:12px}
+details.card summary{padding:9px 0;font-size:14px}
+.chart text{font-size:10.5px}
 @media (min-width:700px){
   .kpis{grid-template-columns:repeat(4,1fr)}
-  .ph{grid-template-columns:repeat(4,1fr)}
   .f.v3{grid-template-columns:1fr 1fr 1fr}
-  .vlist{grid-template-columns:1fr 1fr 1fr}
   .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   .g2>.card{margin-bottom:0}
 }
@@ -214,13 +278,13 @@ label.fl{display:block;font-size:13px;color:var(--mut);margin-bottom:4px;font-we
         <div><label class="fl">Kilometre (sayaç)</label><input class="in" name="km" inputmode="numeric" placeholder="Örn. 85420"><div class="hint" id="kmHint"></div></div>
         <div><label class="fl">Litre</label><input class="in" name="liters" inputmode="decimal" placeholder="0,00"></div>
         <div><label class="fl">Litre fiyatı (₺)</label><input class="in" name="price" inputmode="decimal" placeholder="0,00"></div>
-        <div class="w2"><label class="fl">Toplam tutar (₺)</label><input class="in" name="total" inputmode="decimal" placeholder="0,00"><div class="hint">Üç alandan herhangi ikisini yaz, üçüncüsü kendiliğinden hesaplanır.</div></div>
-        <div class="w2"><div class="sw"><div><b>Depo full dolduruldu</b><small>Tüketim, iki full alım arasında hesaplanır.</small></div><label class="tog"><input type="checkbox" name="full" checked><span></span></label></div></div>
+        <div class="w2"><label class="fl">Toplam tutar (₺)</label><input class="in" name="total" inputmode="decimal" placeholder="0,00"><div class="hint">Herhangi ikisini yaz, üçüncüsü hesaplanır.</div></div>
+        <div class="w2"><div class="sw"><div><b>Depo full dolduruldu</b><small>Tüketim iki full alım arasında ölçülür.</small></div><label class="tog"><input type="checkbox" name="full" checked><span></span></label></div></div>
         <div class="w2"><label class="fl">İstasyon (isteğe bağlı)</label><input class="in" name="station" list="stations" placeholder="Örn. Shell Esenler"><datalist id="stations"></datalist></div>
         <div class="w2"><label class="fl">Not (isteğe bağlı)</label><input class="in" name="note" placeholder="Örn. uzun yol öncesi"></div>
       </div>
       <div class="prev" id="efPrev"></div>
-      <div class="row" style="margin-top:14px">
+      <div class="row" style="margin-top:12px">
         <button type="button" class="btn bad" id="efDel" onclick="deleteEntry()" style="display:none">Sil</button>
         <button type="submit" class="btn pri" style="flex:1">Kaydet</button>
       </div>
@@ -425,19 +489,19 @@ function renderHome(){
       ${kpi(AYLAR[new Date().getMonth()] + ' harcaması', fmt(mSpent, 0), '₺', mE.length ? `${mE.length} alım · ${fmt(mLit, 1)} L` : 'Bu ay alım yok')}
     </div>
     <div class="card">
-      <h3>Son alım</h3>
-      <div class="vlist" style="margin-bottom:4px">
-        <div><span>Tarih</span>${dTR(last.date)} · ${since === 0 ? 'bugün' : since + ' gün önce'}</div>
-        <div><span>Kilometre</span>${fmtInt(last.km)} km</div>
-        <div><span>Alınan</span>${fmt(last.liters, 2)} L · ${money(last.total)}</div>
+      <div class="lh"><h3>Son alım</h3><span>${dTR(last.date)} · ${since === 0 ? 'bugün' : since + ' gün önce'}</span></div>
+      <div class="vlist">
+        <div><span>Alınan</span>${fmt(last.liters, 2)} L</div>
+        <div><span>Tutar</span>${money(last.total)}</div>
         <div><span>Litre fiyatı</span>${fmt(last.price, 2)} ₺</div>
-        <div><span>Önceki alımdan beri</span>${res[last.id].diffKm != null ? fmtInt(res[last.id].diffKm) + ' km' : '—'}</div>
+        <div><span>Kilometre</span>${fmtInt(last.km)}</div>
+        <div><span>Önceki alımdan</span>${res[last.id].diffKm != null ? '+' + fmtInt(res[last.id].diffKm) + ' km' : '—'}</div>
         <div><span>Depo</span>${last.full ? 'Full' : 'Kısmi'}</div>
       </div>
     </div>
     <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">Son alımlar</h3><button class="btn sm" onclick="go('history')">Tümü</button></div>
-      <div style="margin-top:6px">${L.slice(-5).reverse().map(e => entryRow(e, res[e.id])).join('')}</div>
+      <div class="lh"><h3>Son alımlar</h3><button class="btn sm" onclick="go('history')">Tümü</button></div>
+      <div>${L.slice(-5).reverse().map(e => entryRow(e, res[e.id])).join('')}</div>
     </div>`;
 }
 
@@ -464,9 +528,9 @@ function renderHistory(){
 }
 
 /* ============ Grafikler ============ */
-function lineChart(pts, {color = 'var(--acc)', d = 1, unit = ''} = {}){
+function lineChart(pts, {color = 'var(--acc)', d = 1, unit = '', w = 640} = {}){
   if (pts.length < 2) return '<div class="empty-chart">Grafik için en az 2 veri gerekli.</div>';
-  const W = 640, H = 220, pl = 48, pr = 14, pt = 16, pb = 30;
+  const W = Math.round(w), H = w < 500 ? 160 : 200, pl = 40, pr = 10, pt = 14, pb = 24;
   const ys = pts.map(p => p.y); let mn = Math.min(...ys), mx = Math.max(...ys);
   if (mn === mx){ mn -= 1; mx += 1; }
   const pad = (mx - mn) * .12; mn -= pad; mx += pad;
@@ -477,15 +541,15 @@ function lineChart(pts, {color = 'var(--acc)', d = 1, unit = ''} = {}){
   const path = pts.map((p, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(p.y).toFixed(1)).join(' ');
   const area = path + ` L${X(pts.length - 1)} ${H - pb} L${pl} ${H - pb} Z`;
   const idx = [...new Set([0, Math.floor((pts.length - 1) / 2), pts.length - 1])];
-  const xl = idx.map(i => `<text x="${X(i)}" y="${H - 8}" text-anchor="${i === 0 ? 'start' : i === pts.length - 1 ? 'end' : 'middle'}">${pts[i].x}</text>`).join('');
+  const xl = idx.map(i => `<text x="${X(i)}" y="${H - 6}" text-anchor="${i === 0 ? 'start' : i === pts.length - 1 ? 'end' : 'middle'}">${pts[i].x}</text>`).join('');
   const dots = pts.length <= 40 ? pts.map((p, i) => `<circle cx="${X(i)}" cy="${Y(p.y)}" r="3.5" fill="${color}"><title>${p.x}: ${fmt(p.y, d)} ${unit}</title></circle>`).join('') : '';
   const lp = pts[pts.length - 1];
   return `<svg viewBox="0 0 ${W} ${H}">${g}<path d="${area}" fill="${color}" opacity=".08"/><path d="${path}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round"/>${dots}
     <text x="${X(pts.length - 1) - 6}" y="${Y(lp.y) - 10}" text-anchor="end" style="fill:var(--tx);font-weight:700">${fmt(lp.y, d)}</text>${xl}</svg>`;
 }
-function barChart(bars, {color = 'var(--acc)'} = {}){
+function barChart(bars, {color = 'var(--acc)', w = 640} = {}){
   if (!bars.some(b => b.y > 0)) return '<div class="empty-chart">Bu dönemde veri yok.</div>';
-  const W = 640, H = 220, pl = 48, pr = 8, pt = 22, pb = 30, mx = Math.max(...bars.map(b => b.y)) * 1.12;
+  const W = Math.round(w), H = w < 500 ? 160 : 200, pl = 40, pr = 4, pt = 14, pb = 24, mx = Math.max(...bars.map(b => b.y)) * 1.12;
   const bw = (W - pl - pr) / bars.length, Y = v => pt + (H - pt - pb) * (1 - v / mx);
   let g = '';
   for (let k = 0; k <= 3; k++){ const v = mx * k / 3, y = Y(v);
@@ -493,7 +557,7 @@ function barChart(bars, {color = 'var(--acc)'} = {}){
   const r = bars.map((b, i) => {
     const x = pl + bw * i + bw * .18, w = bw * .64, y = Y(b.y);
     return `<rect x="${x}" y="${y}" width="${w}" height="${H - pb - y}" rx="4" fill="${color}"><title>${b.x}: ${money(b.y)}</title></rect>
-      <text x="${x + w / 2}" y="${H - 10}" text-anchor="middle">${b.x}</text>`;
+      <text x="${x + w / 2}" y="${H - 7}" text-anchor="middle">${b.x}</text>`;
   }).join('');
   return `<svg viewBox="0 0 ${W} ${H}">${g}${r}</svg>`;
 }
@@ -521,6 +585,7 @@ function renderStats(){
   const consSeries = S.map(s => ({x: dTR(s.date).slice(0, 5) + '.' + s.date.slice(2, 4), y: s.l100}));
   const rows = mStat.filter(m => m.n).reverse().map(m => { const [y, mo] = m.ym.split('-');
     return `<tr><td>${AYLAR[+mo-1]} ${y}</td><td>${m.n}</td><td>${fmt(m.lit, 1)} L</td><td>${money(m.tl)}</td><td>${fmt(m.tl / m.lit, 2)} ₺</td></tr>`; }).join('');
+  const cw = Math.max(260, Math.min(window.innerWidth, 1000) - 50), lw = window.innerWidth >= 700 ? (cw - 40) / 2 : cw;
   el.innerHTML = `<h2 class="pt">İstatistik</h2>
     <div class="chips">
       ${[['all','Tüm zamanlar'],['12','Son 12 ay'],['year','Bu yıl']].map(([k, n]) => `<button class="chip ${statRange === k ? 'on' : ''}" onclick="statRange='${k}';renderStats()">${n}</button>`).join('')}
@@ -535,16 +600,16 @@ function renderStats(){
       ${kpi('Ort. alım aralığı', E.length > 1 ? fmtInt(kmSpan / (E.length - 1)) : '—', 'km', E.length > 1 && daySpan ? `≈ ${fmt(daySpan / (E.length - 1), 0)} günde bir` : '')}
       ${kpi('En iyi / en kötü', S.length ? fmt(Math.min(...S.map(s => s.l100)), 1) + ' / ' + fmt(Math.max(...S.map(s => s.l100)), 1) : '—', S.length ? 'L/100' : '', 'Tüketim ölçümleri')}
     </div>
-    <div class="card chart"><h3>Aylık harcama (son 12 ay)</h3>${barChart(mStat.map(m => ({x: AY_K[+m.ym.slice(5) - 1], y: m.tl})))}</div>
-    <div class="g2" style="margin-bottom:14px">
-      <div class="card chart"><h3>Litre fiyatı (₺)</h3>${lineChart(priceSeries, {color: 'var(--blue)', d: 2, unit: '₺'})}</div>
-      <div class="card chart"><h3>Tüketim (L/100 km)</h3>${lineChart(consSeries, {color: 'var(--acc)', d: 1, unit: 'L/100 km'})}</div>
+    <div class="card chart"><h3>Aylık harcama (son 12 ay)</h3>${barChart(mStat.map(m => ({x: AY_K[+m.ym.slice(5) - 1], y: m.tl})), {w: cw})}</div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="card chart"><h3>Litre fiyatı (₺)</h3>${lineChart(priceSeries, {color: 'var(--blue)', d: 2, unit: '₺', w: lw})}</div>
+      <div class="card chart"><h3>Tüketim (L/100 km)</h3>${lineChart(consSeries, {color: 'var(--acc)', d: 1, unit: 'L/100 km', w: lw})}</div>
     </div>
     ${rows ? `<div class="card"><h3>Aylık döküm (son 12 ay)</h3><div class="tw"><table class="t"><tr><th>Ay</th><th>Alım</th><th>Litre</th><th>Tutar</th><th>Ort. fiyat</th></tr>${rows}</table></div></div>` : ''}`;
 }
 
 /* ============ Aracım ============ */
-const SLOTS = [['arac','Araç fotoğrafı'],['ruhsatOn','Ruhsat (ön yüz)'],['ruhsatArka','Ruhsat (arka yüz)'],['police','Sigorta / Kasko']];
+const SLOTS = [['arac','Araç'],['ruhsatOn','Ruhsat ön'],['ruhsatArka','Ruhsat arka'],['police','Poliçe']];
 const VFIELDS = [
   ['plaka','Plaka *','34 ABC 123'],['marka','Marka','Örn. Renault'],['model','Model','Örn. Clio 1.0 TCe'],
   ['yil','Model yılı','2021','numeric'],['renk','Renk',''],['yakit','Yakıt türü','', 'sel'],
@@ -569,11 +634,10 @@ function renderVehicle(){
   };
   el.innerHTML = `<h2 class="pt">Aracım</h2>
     ${remindersHTML(true)}
-    <div class="card"><h3>Fotoğraflar ve belgeler</h3><div class="ph">${tiles}</div>
-      <div class="hint" style="margin-top:8px">Fotoğraflar küçültülerek kaydedilir. Telefonda doğrudan kamerayla çekebilirsin.</div></div>
+    <div class="card"><div class="lh"><h3>Fotoğraflar</h3><span>Kamerayla çekebilirsin</span></div><div class="ph">${tiles}</div></div>
     <div class="card"><h3>Araç kimliği</h3>
       <form id="vf" class="f v3" oninput="vehDirty=true">${VFIELDS.map(field).join('')}</form>
-      <button class="btn pri full" style="margin-top:14px" onclick="saveVehicleForm()">Araç bilgilerini kaydet</button>
+      <button class="btn pri full" style="margin-top:12px" onclick="saveVehicleForm()">Araç bilgilerini kaydet</button>
     </div>`;
 }
 function saveVehicleForm(){
@@ -725,6 +789,7 @@ function deleteEntry(){
   entries[editId] = e; saveEntries(); pushEntry(e);
   closeEntry(); renderAll(); toast('Kayıt silindi');
 }
+let _rz; window.addEventListener('resize', () => { clearTimeout(_rz); _rz = setTimeout(renderStats, 200); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape'){ closeEntry(); closeViewer(); } });
 
 /* ============ Ayarlar ============ */
@@ -750,7 +815,7 @@ function renderSettings(){
         <li><b>iPhone:</b> Safari paylaş düğmesi → <i>Ana Ekrana Ekle</i>.</li>
         <li><b>Bilgisayar:</b> adres çubuğundaki yükle simgesi.</li>
       </ul></details>
-    <p class="small muted" style="text-align:center">Yakıt Takip · v1.1</p>`;
+    <p class="small muted" style="text-align:center">Yakıt Takip · v1.2</p>`;
 }
 function openAuth(){ $('#authSheet').classList.remove('hidden'); setTimeout(() => $('#lgE').focus(), 150); }
 function closeAuth(){ $('#authSheet').classList.add('hidden'); $('#lgP').value = ''; }
