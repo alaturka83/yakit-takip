@@ -169,6 +169,25 @@ label.fl{display:block;font-size:13px;color:var(--mut);margin-bottom:4px;font-we
 .efv .vth svg{width:22px;height:22px}
 .efv b{font-size:15px}
 .efv .es{font-size:12px}
+/* ===== Kompakt yakıt formu ===== */
+.f.ef{gap:7px 8px}
+.f.ef .in{padding:7px 9px;border-radius:9px}
+.f.ef label.fl{font-size:11.5px;margin-bottom:2px}
+.trio{display:grid;grid-template-columns:1fr 1fr 1.15fr;gap:6px}
+.trio>div{min-width:0}
+.f.ef .sw{padding:5px 10px}
+.f.ef .sw b{font-size:13.5px;font-weight:600}
+.f.ef .hint:empty{display:none}
+#sheet .sheet-head{margin-bottom:8px}
+#sheet .sheet-head h3{font-size:15.5px}
+#sheet .prev{margin-top:8px;padding:6px 9px;font-size:12px}
+#sheet .btn{padding:9px 14px}
+.efv{padding:5px 8px;gap:8px}
+.efv .vth{width:34px;height:34px;border-radius:8px}
+.efv .vth svg{width:18px;height:18px}
+.efv b{font-size:14px}
+.efv .es{font-size:11.5px}
+#efVeh .chips .chip{padding:4px 10px;font-size:12.5px}
 /* ===== Klavye açılınca form görünür kalsın ===== */
 .sheet{height:var(--vvh,100dvh);bottom:auto}
 .sheet-box{max-height:calc(var(--vvh,100dvh) - 12px);overscroll-behavior:contain}
@@ -304,19 +323,22 @@ details.card summary{padding:9px 0;font-size:14px}
   <div class="sheet-box">
     <div class="sheet-head"><h3 id="sheetTitle">Yakıt Alımı</h3><button class="x" type="button" onclick="closeEntry()">×</button></div>
     <form id="ef" autocomplete="off">
-      <div id="efVeh" style="margin-bottom:10px;display:none"></div>
-      <div class="f">
+      <div id="efVeh" style="margin-bottom:8px;display:none"></div>
+      <div class="f ef">
         <div><label class="fl">Tarih</label><input class="in" type="date" name="date" required></div>
-        <div><label class="fl">Kilometre (sayaç)</label><input class="in" name="km" inputmode="numeric" placeholder="Örn. 85420"><div class="hint" id="kmHint"></div></div>
-        <div><label class="fl">Litre</label><input class="in" name="liters" inputmode="decimal" placeholder="0,00"></div>
-        <div><label class="fl">Litre fiyatı (₺)</label><input class="in" name="price" inputmode="decimal" placeholder="0,00"></div>
-        <div class="w2"><label class="fl">Toplam tutar (₺)</label><input class="in" name="total" inputmode="decimal" placeholder="0,00"><div class="hint">Herhangi ikisini yaz, üçüncüsü hesaplanır.</div></div>
-        <div class="w2"><div class="sw"><div><b>Depo full dolduruldu</b><small>Tüketim iki full alım arasında ölçülür.</small></div><label class="tog"><input type="checkbox" name="full" checked><span></span></label></div></div>
-        <div class="w2"><label class="fl">İstasyon (isteğe bağlı)</label><input class="in" name="station" list="stations" placeholder="Örn. Shell Esenler"><datalist id="stations"></datalist></div>
-        <div class="w2"><label class="fl">Not (isteğe bağlı)</label><input class="in" name="note" placeholder="Örn. uzun yol öncesi"></div>
+        <div><label class="fl">Kilometre</label><input class="in" name="km" inputmode="numeric" placeholder="85420"></div>
+        <div class="w2 hint" id="kmHint" style="margin-top:-4px"></div>
+        <div class="w2 trio">
+          <div><label class="fl">Litre</label><input class="in" name="liters" inputmode="decimal" placeholder="0,00"></div>
+          <div><label class="fl">₺/L</label><input class="in" name="price" inputmode="decimal" placeholder="0,00"></div>
+          <div><label class="fl">Tutar ₺</label><input class="in" name="total" inputmode="decimal" placeholder="0,00"></div>
+        </div>
+        <div class="w2"><div class="sw"><b>Depo full dolduruldu</b><label class="tog"><input type="checkbox" name="full" checked><span></span></label></div></div>
+        <div><label class="fl">İstasyon</label><input class="in" name="station" list="stations" placeholder="İsteğe bağlı"><datalist id="stations"></datalist></div>
+        <div><label class="fl">Not</label><input class="in" name="note" placeholder="İsteğe bağlı"></div>
       </div>
       <div class="prev" id="efPrev"></div>
-      <div class="row" style="margin-top:12px">
+      <div class="row" style="margin-top:10px">
         <button type="button" class="btn bad" id="efDel" onclick="deleteEntry()" style="display:none">Sil</button>
         <button type="submit" class="btn pri" style="flex:1">Kaydet</button>
       </div>
